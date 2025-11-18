@@ -111,148 +111,255 @@
     </div>
   </header>
 
-  <div class="app">
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div>
-        <div class="sidebar-section-title">Panel principal</div>
-        <div class="nav">
-          <button class="nav-btn active" onclick="changeView('vuelos', this)">Vuelos</button>
-          <button class="nav-btn" onclick="changeView('pasajeros', this)">Pasajeros PMR</button>
-          <button class="nav-btn" onclick="changeView('agentes', this)">Agentes</button>
-          <button class="nav-btn" onclick="changeView('asignaciones', this)">Asignaciones</button>
-        </div>
-      </div>
+	  <div class="app">
+		<!-- SIDEBAR -->
+		<aside class="sidebar">
+		  <div>
+			<div class="sidebar-section-title">Panel principal</div>
+			<div class="nav">
+			  <button class="nav-btn active" onclick="changeView('vuelos', this)">Vuelos</button>
+			  <button class="nav-btn" onclick="changeView('pasajeros', this)">Pasajeros PMR</button>
+			  <button class="nav-btn" onclick="changeView('agentes', this)">Agentes</button>
+			  <button class="nav-btn" onclick="changeView('asignaciones', this)">Asignaciones</button>
+			</div>
+		  </div>
 
-      <div class="actions-box">
-        <div class="sidebar-section-title" style="margin-bottom:6px;">Acciones</div>
-        <div class="action-tabs">
-          <button class="action-tab-btn active"
-                  data-action="crearVuelo"
-                  onclick="selectAction('crearVuelo', this)">Crear Vuelo</button>
+		  <div class="actions-box">
+	  <div class="sidebar-section-title">Acciones</div>
+	  <div class="action-tabs">
+		<button class="action-tab-btn active"
+				data-action="crearVuelo"
+				onclick="selectAction('crearVuelo', this)">
+		  Crear vuelo
+		</button>
+		<button class="action-tab-btn"
+				data-action="modificarVuelo"
+				onclick="selectAction('modificarVuelo', this)">
+		  Modificar vuelo
+		</button>
+		<button class="action-tab-btn"
+				data-action="crearPasajero"
+				onclick="selectAction('crearPasajero', this)">
+		  Crear pasajero
+		</button>
+		<button class="action-tab-btn"
+				data-action="cargaMasiva"
+				onclick="selectAction('cargaMasiva', this)">
+		  Carga masiva
+		</button>
+	  </div>
 
-          <button class="action-tab-btn"
-                  data-action="modificarVuelo"
-                  onclick="selectAction('modificarVuelo', this)">Modificar Vuelo</button>
+	  <!-- CREAR VUELO -->
+	  <div id="action-crearVuelo" class="action-form">
+		<strong style="font-size:12px;">Crear vuelo</strong>
+		<form id="form-crear-vuelo">
+		  <label>Fecha vuelo
+			<input type="date" name="fecha" required>
+		  </label>
+		  <label>Hora programada
+			<input type="time" name="horaProgramada" required>
+		  </label>
+		  <label>Aerolínea
+			<input list="lista-aerolineas" name="aerolinea" required placeholder="Sky Airline, LATAM, etc.">
+			<datalist id="lista-aerolineas">
+			  <option value="Sky Airline"></option>
+			  <option value="JetSmart"></option>
+			  <option value="Aerovías DAP"></option>
+			  <option value="Aerolíneas Argentinas"></option>
+			  <option value="Aeroméxico"></option>
+			  <option value="Air Canada"></option>
+			  <option value="American Airlines"></option>
+			  <option value="Avianca"></option>
+			  <option value="Copa Airlines"></option>
+			  <option value="Delta Air Lines"></option>
+			  <option value="Spirit Airlines"></option>
+			  <option value="Air France"></option>
+			  <option value="British Airways"></option>
+			  <option value="Iberia"></option>
+			  <option value="Swiss International Air Lines"></option>
+			  <option value="Qatar Airways"></option>
+			</datalist>
+		  </label>
+		  <label>Número de vuelo
+			<input type="text" name="numeroVuelo" placeholder="LA345" required>
+		  </label>
+		  <label>Terminal
+			<select id="terminal-crear" name="terminal" required>
+			  <option value="">-- Seleccionar --</option>
+			  <option value="Nacional">Nacional</option>
+			  <option value="Internacional">Internacional</option>
+			</select>
+		  </label>
+		  <label>Puerta
+			<input type="number" name="puerta" min="1" max="12" required>
+		  </label>
+		  <label>Espigón
+			<select id="espigon-crear" name="espigon" required>
+			  <option value="">-- Seleccionar --</option>
+			  <!-- Se llena dinámicamente según terminal -->
+			</select>
+		  </label>
+		  <label>Cant. pasajeros PMR
+			<input type="number" name="cantPmr" min="0" value="0" required>
+		  </label>
+		  <label>Tipo de servicio
+			<select name="tipoServicio" required>
+			  <option value="">-- Seleccionar --</option>
+			  <option value="Embarque">Embarque</option>
+			  <option value="Desembarque">Desembarque</option>
+			  <option value="Conexion">Conexión</option>
+			</select>
+		  </label>
+		  <label>Observaciones
+			<textarea name="observaciones"></textarea>
+		  </label>
+		  <button type="submit" class="btn-submit">Guardar vuelo</button>
+		  <div id="msg-crear-vuelo" class="msg"></div>
+		</form>
+	  </div>
 
-          <button class="action-tab-btn"
-                  data-action="crearPasajero"
-                  onclick="selectAction('crearPasajero', this)">Crear Pasajero</button>
+	  <!-- MODIFICAR VUELO -->
+	  <div id="action-modificarVuelo" class="action-form hidden">
+		<strong style="font-size:12px;">Modificar vuelo (solo hoy)</strong>
+		<form id="form-modificar-vuelo">
+		  <label>Seleccionar vuelo (fecha de hoy)
+			<select id="select-vuelo-modificar" name="idVuelo" required>
+			  <option value="">Cargando...</option>
+			</select>
+		  </label>
+		  <div id="info-vuelo-modificar" class="helper-text"></div>
 
-          <button class="action-tab-btn"
-                  data-action="cargaMasiva"
-                  onclick="selectAction('cargaMasiva', this)">Carga Masiva</button>
-        </div>
+		  <label>Nueva fecha (opcional)
+			<input type="date" name="nuevaFecha">
+		  </label>
+		  <label>Nueva hora
+			<input type="time" name="nuevaHora">
+		  </label>
+		  <label>Nueva puerta
+			<input type="number" name="nuevaPuerta" min="1" max="12">
+		  </label>
+		  <label>Nuevo espigón
+			<select id="espigon-modificar" name="nuevoEspigon">
+			  <option value="">-- Seleccionar --</option>
+			</select>
+		  </label>
 
-        <!-- CREAR VUELO -->
-        <div id="action-crearVuelo" class="action-form">
-          <strong style="font-size:12px;">Crear vuelo</strong>
-          <p class="helper-text">Al guardar se enviará el vuelo a Google Sheets por la API.</p>
-          <form id="form-crear-vuelo">
-            <label>Fecha
-              <input type="date" name="fecha" required />
-            </label>
-            <label>Hora programada
-              <input type="time" name="horaProgramada" />
-            </label>
+		  <div class="helper-text">
+			Al guardar, el estado de vuelo se marcará como <b>Modificado</b>.
+		  </div>
+		  <button type="submit" class="btn-submit">Guardar cambios</button>
+		  <div id="msg-modificar-vuelo" class="msg"></div>
+		</form>
+	  </div>
 
-            <label>Aerolínea
-              <input type="text" name="aerolinea"
-                     list="lista-aerolineas"
-                     placeholder="Escribe o selecciona..." />
-            </label>
-            <datalist id="lista-aerolineas">
-              <option value="Sky Airline"></option>
-              <option value="JetSmart"></option>
-              <option value="Aerovías DAP"></option>
-              <option value="Aerolineas Argentinas"></option>
-              <option value="Aeroméxico"></option>
-              <option value="Air Canada"></option>
-              <option value="American Airlines"></option>
-              <option value="Avianca"></option>
-              <option value="Copa Airlines"></option>
-              <option value="Delta Air Lines"></option>
-              <option value="Spirit Airlines"></option>
-              <option value="Air France"></option>
-              <option value="British Airways"></option>
-              <option value="Iberia"></option>
-              <option value="Swiss International Air Lines"></option>
-              <option value="Qatar Airways"></option>
-            </datalist>
+	  <!-- CREAR PASAJERO -->
+	  <div id="action-crearPasajero" class="action-form hidden">
+		<strong style="font-size:12px;">Crear pasajero PMR</strong>
+		<form id="form-crear-pasajero">
+		  <label>Vuelo
+			<select id="select-vuelo-pasajero" name="vuelo" required>
+			  <option value="">Cargando...</option>
+			</select>
+		  </label>
+		  <label>Nombre pasajero
+			<input type="text" name="nombre" required>
+		  </label>
+		  <label>Tipo asistencia
+			<input type="text" name="tipoAsistencia" placeholder="Silla de ruedas, ciego, etc." required>
+		  </label>
+		  <label>Edad (opcional)
+			<input type="number" name="edad" min="0">
+		  </label>
+		  <label>Origen
+			<input type="text" name="origen" placeholder="Puerta, zona, estacionamiento...">
+		  </label>
+		  <label>Destino
+			<input type="text" name="destino" placeholder="Puerta, zona, estacionamiento...">
+		  </label>
+		  <label>Observaciones
+			<textarea name="observaciones"></textarea>
+		  </label>
+		  <button type="submit" class="btn-submit">Guardar pasajero</button>
+		  <div id="msg-crear-pasajero" class="msg"></div>
+		</form>
+	  </div>
 
-            <label>N° Vuelo
-              <input type="text" name="numeroVuelo" required placeholder="Ej: LA345" />
-            </label>
+	  <!-- CARGA MASIVA -->
+	  <div id="action-cargaMasiva" class="action-form hidden">
+		<strong style="font-size:12px;">Carga masiva (v2)</strong>
+		<p class="helper-text">
+		  Selecciona un archivo CSV o Excel (.csv, .xlsx, .xls) con columnas:
+		  Nombre_PMR, RUT, Edad, Fecha_Vuelo, Hora, Tipo_Vuelo, Vuelo, Aerolínea,
+		  Terminal, Origen, Destino, Puerta, Espigón, Tipo_PMR, Observaciones.
+		</p>
+		<input type="file" id="file-carga-masiva" accept=".csv,.xlsx,.xls" />
+		<button type="button" class="btn-submit" id="btn-procesar-carga">Procesar archivo</button>
 
-            <label>Terminal
-              <select name="terminal" id="terminal-crear">
-                <option value="">-- Seleccionar --</option>
-                <option value="Nacional">Nacional</option>
-                <option value="Internacional">Internacional</option>
-              </select>
-            </label>
+		<!-- Botón que aparece solo cuando hay errores -->
+		<button type="button"
+				class="btn-submit"
+				id="btn-descargar-errores"
+				style="margin-top:4px; display:none;">
+		  Descargar errores
+		</button>
 
-            <label>Espigón
-              <select name="espigon" id="espigon-crear">
-                <option value="">-- Seleccionar --</option>
-              </select>
-            </label>
+		<div class="helper-text">
+		  Se crearán vuelos únicos (sumando PMR por vuelo) y un registro de pasajero por cada fila.
+		</div>
+		<div id="msg-carga-masiva" class="msg"></div>
+	  </div>
 
-            <label>Puerta
-              <input type="number" name="puerta" min="1" max="99" />
-            </label>
+	  <!-- SEPARADOR -->
+	  <hr style="border-color:#1f2937; margin:8px 0;">
 
-            <label>Cantidad pasajeros PMR
-              <input type="number" name="cantPmr" min="0" value="0" />
-            </label>
-            <label>Tipo servicio
-              <select name="tipoServicio">
-                <option value="">-- Seleccionar --</option>
-                <option value="Embarque">Embarque</option>
-                <option value="Desembarque">Desembarque</option>
-                <option value="Conexion">Conexion</option>
-              </select>
-            </label>
-            <label>Observaciones
-              <textarea name="observaciones"></textarea>
-            </label>
-            <button type="submit" class="btn-submit">Guardar vuelo</button>
-            <div id="msg-crear-vuelo" class="msg"></div>
-          </form>
-        </div>
+	  <!-- ACCIONES AGENTES -->
+	  <div class="sidebar-section-title" style="margin-bottom:4px;">Acciones agentes</div>
+	  <div class="action-tabs">
+		<button class="action-tab-btn"
+				data-action="asignarPmr"
+				onclick="selectAction('asignarPmr', this)">
+		  Asignar PMR a agente
+		</button>
+	  </div>
 
-        <!-- MODIFICAR VUELO -->
-        <div id="action-modificarVuelo" class="action-form hidden">
-          <strong style="font-size:12px;">Modificar vuelo</strong>
-          <p class="helper-text">
-            Solo se pueden modificar vuelos del día de hoy. Se actualizan fecha (opcional), hora, puerta y espigón.
-          </p>
-          <form id="form-modificar-vuelo">
-            <label>Seleccionar vuelo (solo hoy)
-              <select name="idVuelo" id="select-vuelo-modificar">
-                <option value="">(Cargando...)</option>
-              </select>
-            </label>
-            <div id="info-vuelo-modificar" class="helper-text"></div>
+	  <div id="action-asignarPmr" class="action-form hidden">
+		<strong style="font-size:12px;">Asignar PMR a agente</strong>
+		<p class="helper-text">
+		  Lista PMR con estado <b>"En espera"</b> y agentes con estado de servicio <b>"Disponible"</b>.
+		</p>
+		<form id="form-asignar-pmr">
+		  <label>Pasajero PMR
+			<select id="select-pmr-asignar" name="idPmr" required>
+			  <option value="">(Cargando...)</option>
+			</select>
+		  </label>
+		  <div id="info-pmr-asignar" class="helper-text"></div>
 
-            <label>Nueva fecha (opcional)
-              <input type="date" name="nuevaFecha" />
-            </label>
-            <label>Nueva hora
-              <input type="time" name="nuevaHora" />
-            </label>
-            <label>Nueva puerta
-              <input type="number" name="nuevaPuerta" min="1" max="99" />
-            </label>
-            <label>Nuevo espigón
-              <select name="nuevoEspigon" id="espigon-modificar">
-                <option value="">-- Seleccionar --</option>
-              </select>
-            </label>
-            <button type="submit" class="btn-submit">Guardar cambios</button>
-            <div id="msg-modificar-vuelo" class="msg"></div>
-          </form>
-        </div>
+		  <label>Agente disponible
+			<select id="select-agente-asignar" name="idAgente" required>
+			  <option value="">(Cargando...)</option>
+			</select>
+		  </label>
+		  <div id="info-agente-asignar" class="helper-text"></div>
+
+		  <label>Tipo de traslado
+			<select name="tipoTraslado" required>
+			  <option value="">-- Seleccionar --</option>
+			  <option value="Ultima Milla">Ultima Milla</option>
+			  <option value="A Gate">A Gate</option>
+			</select>
+		  </label>
+
+		  <label>Observaciones
+			<textarea name="observaciones"></textarea>
+		  </label>
+
+		  <button type="submit" class="btn-submit">Crear asignación</button>
+		  <div id="msg-asignar-pmr" class="msg"></div>
+		</form>
+	  </div>
+	</div>
+		
 
         <!-- CREAR PASAJERO -->
         <div id="action-crearPasajero" class="action-form hidden">
@@ -288,20 +395,30 @@
         </div>
 
         <!-- CARGA MASIVA -->
-        <div id="action-cargaMasiva" class="action-form hidden">
-          <strong style="font-size:12px;">Carga masiva</strong>
-          <p class="helper-text">
-            Selecciona un archivo CSV o Excel (.csv, .xlsx, .xls) con columnas:
-            Nombre_PMR, RUT, Edad, Fecha_Vuelo, Hora, Tipo_Vuelo, Vuelo, Aerolínea,
-            Terminal, Origen, Destino, Puerta, Espigón, Tipo_PMR, Observaciones.
-          </p>
-          <input type="file" id="file-carga-masiva" accept=".csv,.xlsx,.xls" />
-          <button type="button" class="btn-submit" id="btn-procesar-carga">Procesar archivo</button>
-          <div class="helper-text">
-            Se crearán vuelos únicos (sumando PMR por vuelo) y un registro de pasajero por cada fila.
-          </div>
-          <div id="msg-carga-masiva" class="msg"></div>
-        </div>
+        <!-- CARGA MASIVA -->
+		<div id="action-cargaMasiva" class="action-form hidden">
+		  <strong style="font-size:12px;">Carga masiva (v2)</strong>
+		  <p class="helper-text">
+			Selecciona un archivo CSV o Excel (.csv, .xlsx, .xls) con columnas:
+			Nombre_PMR, RUT, Edad, Fecha_Vuelo, Hora, Tipo_Vuelo, Vuelo, Aerolínea,
+			Terminal, Origen, Destino, Puerta, Espigón, Tipo_PMR, Observaciones.
+		  </p>
+		  <input type="file" id="file-carga-masiva" accept=".csv,.xlsx,.xls" />
+		  <button type="button" class="btn-submit" id="btn-procesar-carga">Procesar archivo</button>
+
+		  <!-- 🔽 NUEVO: botón para descargar errores -->
+		  <button type="button"
+				  class="btn-submit"
+				  id="btn-descargar-errores"
+				  style="margin-top:4px; display:none;">
+			Descargar errores
+		  </button>
+
+		  <div class="helper-text">
+			Se crearán vuelos únicos (sumando PMR por vuelo) y un registro de pasajero por cada fila.
+		  </div>
+		  <div id="msg-carga-masiva" class="msg"></div>
+		</div>
       </div>
     </aside>
 
@@ -395,654 +512,592 @@
     </main>
   </div>
 
-  <script>
-    // 🔗 URL de tu API de Apps Script
-    const API_URL = "https://script.google.com/macros/s/AKfycbwFBHpIx-gQrVAvj5Vv-I-l1X3NR9MYbyTV9CtxgKCw7oPeuxIE5qrYx3eZdDoIroTE/exec";
+<script>
+  // 🔗 URL de tu API de Apps Script
+  const API_URL = "https://script.google.com/macros/s/AKfycbwFBHpIx-gQrVAvj5Vv-I-l1X3NR9MYbyTV9CtxgKCw7oPeuxIE5qrYx3eZdDoIroTE/exec";
 
-    let cacheVuelos = [];
+  let cacheVuelos = [];
+  let erroresCargaDetalle = []; // para guardar detalle de errores de carga masiva
 
-    // ========= UI BÁSICA =========
-    function changeView(viewId, btn){
-      const map = {
-        vuelos:"Vuelos (Base Vuelos)",
-        pasajeros:"Pasajeros PMR",
-        agentes:"Agentes",
-        asignaciones:"Asignaciones"
-      };
-      document.getElementById("view-title").textContent = map[viewId] || "Panel";
-      document.getElementById("chip-vista").textContent = map[viewId] ? map[viewId].split(" ")[0] : "Panel";
+  // ========= UI BÁSICA (cambiar vista principal) =========
+  function changeView(viewId, btn){
+    const map = {
+      vuelos:"Vuelos (Base Vuelos)",
+      pasajeros:"Pasajeros PMR",
+      agentes:"Agentes",
+      asignaciones:"Asignaciones"
+    };
+    const titulo = map[viewId] || "Panel";
+    document.getElementById("view-title").textContent = titulo;
+    document.getElementById("chip-vista").textContent = titulo.split(" ")[0];
 
-      document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
-      document.getElementById("view-"+viewId).classList.add("active");
+    document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+    document.getElementById("view-"+viewId).classList.add("active");
 
-      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-    }
-
-    function selectAction(actionId, btn){
-      document.querySelectorAll(".action-form").forEach(f => f.classList.add("hidden"));
-      document.getElementById("action-"+actionId).classList.remove("hidden");
-      document.querySelectorAll(".action-tab-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-    }
-
-    // ========= ESPIGÓN SEGÚN TERMINAL =========
-    function actualizarOpcionesEspigon(selectElem, terminal){
-      selectElem.innerHTML = '<option value="">-- Seleccionar --</option>';
-      let opciones = [];
-      if (terminal === "Nacional") {
-        opciones = ["A", "B"];
-      } else if (terminal === "Internacional") {
-        opciones = ["C", "D", "E", "F"];
-      } else {
-        opciones = ["A","B","C","D","E","F"];
-      }
-      opciones.forEach(v=>{
-        const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v;
-        selectElem.appendChild(opt);
-      });
-    }
-
-    function actualizarEspigonCrear(){
-      const terminal = document.getElementById("terminal-crear").value;
-      const selEsp = document.getElementById("espigon-crear");
-      actualizarOpcionesEspigon(selEsp, terminal);
-    }
-
-    function onCambioVueloModificar(){
-      const sel = document.getElementById("select-vuelo-modificar");
-      const id  = sel.value;
-      const infoDiv = document.getElementById("info-vuelo-modificar");
-
-      const campoFecha  = document.querySelector('#form-modificar-vuelo input[name="nuevaFecha"]');
-      const campoHora   = document.querySelector('#form-modificar-vuelo input[name="nuevaHora"]');
-      const campoPuerta = document.querySelector('#form-modificar-vuelo input[name="nuevaPuerta"]');
-      const campoEsp    = document.getElementById("espigon-modificar");
-
-      campoFecha.value  = "";
-      campoHora.value   = "";
-      campoPuerta.value = "";
-      campoEsp.innerHTML = '<option value="">-- Seleccionar --</option>';
-      infoDiv.textContent = "";
-
-      if (!id) return;
-      const v = cacheVuelos.find(v => String(v.idVuelo) === String(id));
-      if (!v) return;
-
-      let fechaStr = "(sin fecha)";
-      if (v.fecha) {
-        const d = new Date(v.fecha);
-        fechaStr = d.toLocaleDateString("es-CL");
-        const y = d.getFullYear();
-        const m = String(d.getMonth()+1).padStart(2,'0');
-        const day = String(d.getDate()).padStart(2,'0');
-        campoFecha.value = `${y}-${m}-${day}`;
-      }
-
-      if (v.horaProgramada) campoHora.value = v.horaProgramada;
-      if (v.puerta) campoPuerta.value = v.puerta;
-
-      actualizarOpcionesEspigon(campoEsp, v.terminal || "");
-      if (v.espigon) campoEsp.value = v.espigon;
-
-      infoDiv.textContent = `Actual: ${fechaStr}, puerta ${v.puerta || "-"}, espigón ${v.espigon || "-"}, terminal ${v.terminal || "-"}`;
-    }
-
-    // ========= UTIL: convertir fecha dd-mm-aaaa a yyyy-mm-dd =========
-    function convertirFechaAISO(fechaStr){
-      if (!fechaStr) return "";
-      const parts = fechaStr.trim().split(/[-\/]/);
-      if (parts.length !== 3) return "";
-      let [d,m,y] = parts;
-      if (y.length === 2) y = "20" + y;
-      return `${y.padStart(4,"0")}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
-    }
-
-    // ========= LECTOR GENÉRICO (CSV / EXCEL) =========
-    async function leerArchivoComoTexto(file){
-      const name = file.name.toLowerCase();
-      if (name.endsWith(".csv") || name.endsWith(".txt")) {
-        // CSV genérico (Excel, LibreOffice, etc.)
-        return await file.text();  // soporta comas o punto y coma, lo manejamos luego
-      } else if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
-        // Excel de escritorio
-        const data = await file.arrayBuffer();
-        const wb = XLSX.read(data, {type:"array"});
-        const firstSheet = wb.SheetNames[0];
-        const sheet = wb.Sheets[firstSheet];
-        // Lo convertimos a CSV (por defecto delimitado por coma)
-        return XLSX.utils.sheet_to_csv(sheet);
-      } else {
-        throw new Error("Formato no soportado. Usa CSV, XLSX o XLS.");
-      }
-    }
-
-    // ========= CARGA DATOS DESDE API =========
-    async function cargarDatos(){
-      const estadoApi = document.getElementById("estado-api");
-      try{
-        const res = await fetch(API_URL + "?action=listAll");
-        const data = await res.json();
-        if(!data.ok){
-          estadoApi.textContent = "Error";
-          console.error(data.error);
-          return;
-        }
-        estadoApi.textContent = "Conectado";
-        cacheVuelos = data.vuelos || [];
-
-        renderVuelos(data.vuelos || []);
-        renderPasajeros(data.pasajeros || []);
-        renderAgentes(data.agentes || []);
-        renderAsignaciones(data.asignaciones || []);
-
-        llenarSelectVuelos();
-      }catch(err){
-        console.error(err);
-        estadoApi.textContent = "Error de conexión";
-      }
-    }
-
-    function renderVuelos(vuelos){
-      const tbody = document.getElementById("tbody-vuelos");
-      const empty = document.getElementById("empty-vuelos");
-      tbody.innerHTML = "";
-      if(!vuelos.length){
-        empty.style.display = "block";
-        return;
-      }
-      empty.style.display = "none";
-      vuelos.forEach(v=>{
-        const tr = document.createElement("tr");
-        const fechaStr = v.fecha ? new Date(v.fecha).toLocaleDateString("es-CL") : "";
-        tr.innerHTML = `
-          <td>${v.idVuelo||""}</td>
-          <td>${fechaStr}</td>
-          <td>${v.horaProgramada||""}</td>
-          <td>${v.aerolinea||""}</td>
-          <td>${v.numeroVuelo||""}</td>
-          <td>${v.terminal||""}</td>
-          <td>${v.puerta||""}</td>
-          <td>${v.espigon||""}</td>
-          <td>${v.cantPmr||0}</td>
-          <td>${v.tipoServicio||""}</td>
-          <td>${v.estadoVuelo||""}</td>
-          <td>${v.observaciones||""}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderPasajeros(pasajeros){
-      const tbody = document.getElementById("tbody-pasajeros");
-      const empty = document.getElementById("empty-pasajeros");
-      tbody.innerHTML = "";
-      if(!pasajeros.length){
-        empty.style.display = "block";
-        return;
-      }
-      empty.style.display = "none";
-      pasajeros.forEach(p=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${p.idPmr||""}</td>
-          <td>${p.vuelo||""}</td>
-          <td>${p.nombre||""}</td>
-          <td>${p.tipoAsistencia||""}</td>
-          <td>${p.edad||""}</td>
-          <td>${p.origen||""}</td>
-          <td>${p.destino||""}</td>
-          <td>${p.estadoPmr||""}</td>
-          <td>${p.idAgente||""}</td>
-          <td>${p.observaciones||""}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderAgentes(agentes){
-      const tbody = document.getElementById("tbody-agentes");
-      const empty = document.getElementById("empty-agentes");
-      tbody.innerHTML = "";
-      if(!agentes.length){
-        empty.style.display = "block";
-        return;
-      }
-      empty.style.display = "none";
-      agentes.forEach(a=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${a.idAgente||""}</td>
-          <td>${a.nombre||""}</td>
-          <td>${a.rut||""}</td>
-          <td>${a.telefono||""}</td>
-          <td>${a.estado||""}</td>
-          <td>${a.estadoServicio||""}</td>
-          <td>${a.ultimoServicio||""}</td>
-          <td>${a.observaciones||""}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderAsignaciones(asig){
-      const tbody = document.getElementById("tbody-asignaciones");
-      const empty = document.getElementById("empty-asignaciones");
-      tbody.innerHTML = "";
-      if(!asig.length){
-        empty.style.display = "block";
-        return;
-      }
-      empty.style.display = "none";
-      asig.forEach(a=>{
-        const tr = document.createElement("tr");
-        const fStr = a.fechaAsignacion ? new Date(a.fechaAsignacion).toLocaleDateString("es-CL") : "";
-        tr.innerHTML = `
-          <td>${a.idAsignacion||""}</td>
-          <td>${a.idVuelo||""}</td>
-          <td>${a.idPmr||""}</td>
-          <td>${a.idAgente||""}</td>
-          <td>${fStr}</td>
-          <td>${a.horaAsignacion||""}</td>
-          <td>${a.horaInicio||""}</td>
-          <td>${a.horaFin||""}</td>
-          <td>${a.estadoAsignacion||""}</td>
-          <td>${a.observaciones||""}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // ========= SELECTS DE VUELOS =========
-    function llenarSelectVuelos(){
-      const selMod = document.getElementById("select-vuelo-modificar");
-      const selPas = document.getElementById("select-vuelo-pasajero");
-      selMod.innerHTML = '<option value="">-- Seleccionar vuelo --</option>';
-      selPas.innerHTML = '<option value="">-- Seleccionar vuelo --</option>';
-
-      const hoy = new Date();
-      const y = hoy.getFullYear();
-      const m = String(hoy.getMonth()+1).padStart(2,'0');
-      const d = String(hoy.getDate()).padStart(2,'0');
-      const hoyIso = `${y}-${m}-${d}`;
-
-      cacheVuelos.forEach(v=>{
-        let esHoy = false;
-        if (v.fecha) {
-          const dv = new Date(v.fecha);
-          const vy = dv.getFullYear();
-          const vm = String(dv.getMonth()+1).padStart(2,'0');
-          const vd = String(dv.getDate()).padStart(2,'0');
-          const fechaVueloIso = `${vy}-${vm}-${vd}`;
-          esHoy = (fechaVueloIso === hoyIso);
-        }
-        if (esHoy) {
-          const opt1 = document.createElement("option");
-          const fechaStr = v.fecha ? new Date(v.fecha).toLocaleDateString("es-CL") : "";
-          opt1.value = v.idVuelo;
-          opt1.textContent = `${v.numeroVuelo || ""} | ${v.aerolinea || ""} | ${fechaStr}`;
-          selMod.appendChild(opt1);
-        }
-
-        const opt2 = document.createElement("option");
-        opt2.value = v.numeroVuelo;
-        opt2.textContent = `${v.numeroVuelo || ""} | ${v.aerolinea || ""}`;
-        selPas.appendChild(opt2);
-      });
-    }
-
-    // ========= FORMULARIOS =========
-
-    // CREAR VUELO
-    document.getElementById("form-crear-vuelo").addEventListener("submit", async (ev)=>{
-      ev.preventDefault();
-      const form = ev.target;
-      const msg = document.getElementById("msg-crear-vuelo");
-      msg.textContent = "Enviando...";
-      msg.className = "msg";
-
-      const params = new URLSearchParams(new FormData(form));
-      params.append("action", "createVuelo");
-
-      try {
-        const res = await fetch(API_URL + "?" + params.toString());
-        const json = await res.json();
-        if (json.ok) {
-          const cant = Number(form.cantPmr.value || 0);
-          const numVuelo = form.numeroVuelo.value;
-          let texto = "Vuelo creado con ID " + (json.idVuelo || "");
-          if (cant > 0) {
-            texto += `. Debes crear ${cant} pasajero(s) PMR para el vuelo ${numVuelo}.`;
-          }
-          msg.textContent = texto;
-          msg.className = "msg ok";
-
-          await cargarDatos();
-
-          if (cant > 0) {
-            const selPas = document.getElementById("select-vuelo-pasajero");
-            selPas.value = numVuelo;
-            const btnPas = document.querySelector('.action-tab-btn[data-action="crearPasajero"]');
-            if (btnPas) {
-              selectAction('crearPasajero', btnPas);
-            }
-          }
-
-          form.reset();
-          actualizarEspigonCrear();
-        } else {
-          msg.textContent = "Error: " + (json.error || "");
-          msg.className = "msg err";
-          console.error(json);
-        }
-      } catch (err) {
-        msg.textContent = "Error de conexión";
-        msg.className = "msg err";
-        console.error(err);
-      }
-    });
-
-    // MODIFICAR VUELO
-    document.getElementById("form-modificar-vuelo").addEventListener("submit", async (ev)=>{
-      ev.preventDefault();
-      const form = ev.target;
-      const msg = document.getElementById("msg-modificar-vuelo");
-      msg.textContent = "Enviando...";
-      msg.className = "msg";
-
-      const params = new URLSearchParams(new FormData(form));
-      params.append("action", "modificarVuelo");
-
-      try {
-        const res = await fetch(API_URL + "?" + params.toString());
-        const json = await res.json();
-        if (json.ok) {
-          msg.textContent = "Vuelo modificado correctamente";
-          msg.className = "msg ok";
-          form.reset();
-          document.getElementById("info-vuelo-modificar").textContent = "";
-          await cargarDatos();
-        } else {
-          msg.textContent = "Error: " + (json.error || "");
-          msg.className = "msg err";
-          console.error(json);
-        }
-      } catch (err) {
-        msg.textContent = "Error de conexión";
-        msg.className = "msg err";
-        console.error(err);
-      }
-    });
-
-    // CREAR PASAJERO
-    document.getElementById("form-crear-pasajero").addEventListener("submit", async (ev)=>{
-      ev.preventDefault();
-      const form = ev.target;
-      const msg = document.getElementById("msg-crear-pasajero");
-      msg.textContent = "Enviando...";
-      msg.className = "msg";
-
-      const params = new URLSearchParams(new FormData(form));
-      params.append("action", "crearPasajero");
-
-      try {
-        const res = await fetch(API_URL + "?" + params.toString());
-        const json = await res.json();
-        if (json.ok) {
-          msg.textContent = "Pasajero creado con ID " + (json.idPmr || "");
-          msg.className = "msg ok";
-          form.reset();
-          await cargarDatos();
-        } else {
-          msg.textContent = "Error: " + (json.error || "");
-          msg.className = "msg err";
-          console.error(json);
-        }
-      } catch (err) {
-        msg.textContent = "Error de conexión";
-        msg.className = "msg err";
-        console.error(err);
-      }
-    });
-
-    // ========= CARGA MASIVA (CSV / EXCEL) =========
-    async function procesarCargaMasiva(){
-  const input = document.getElementById("file-carga-masiva");
-  const msg = document.getElementById("msg-carga-masiva");
-  msg.textContent = "";
-  msg.className = "msg";
-
-  if (!input.files || !input.files.length) {
-    msg.textContent = "Selecciona un archivo.";
-    msg.className = "msg err";
-    return;
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
   }
 
-  const file = input.files[0];
+  // ========= UI BÁSICA (acciones en el sidebar) =========
+  function selectAction(actionId, btn){
+    document.querySelectorAll(".action-form").forEach(f => f.classList.add("hidden"));
+    document.getElementById("action-"+actionId).classList.remove("hidden");
+    document.querySelectorAll(".action-tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  }
 
-  try {
-    msg.textContent = "Leyendo archivo...";
-    let text = await leerArchivoComoTexto(file);
+  // ========= ESPIGÓN SEGÚN TERMINAL =========
+  function actualizarOpcionesEspigon(selectElem, terminal){
+    selectElem.innerHTML = '<option value="">-- Seleccionar --</option>';
+    let opciones = [];
+    if (terminal === "Nacional") {
+      opciones = ["A", "B"];
+    } else if (terminal === "Internacional") {
+      opciones = ["C", "D", "E", "F"];
+    } else {
+      opciones = ["A","B","C","D","E","F"];
+    }
+    opciones.forEach(v=>{
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v;
+      selectElem.appendChild(opt);
+    });
+  }
 
-    const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
-    if (lines.length <= 1) {
-      msg.textContent = "El archivo no contiene datos (solo encabezado?).";
+  function actualizarEspigonCrear(){
+    const terminal = document.getElementById("terminal-crear").value;
+    const selEsp = document.getElementById("espigon-crear");
+    if (!selEsp) return;
+    actualizarOpcionesEspigon(selEsp, terminal);
+  }
+
+  function onCambioVueloModificar(){
+    const sel = document.getElementById("select-vuelo-modificar");
+    const id  = sel.value;
+    const infoDiv = document.getElementById("info-vuelo-modificar");
+
+    const campoFecha  = document.querySelector('#form-modificar-vuelo input[name="nuevaFecha"]');
+    const campoHora   = document.querySelector('#form-modificar-vuelo input[name="nuevaHora"]');
+    const campoPuerta = document.querySelector('#form-modificar-vuelo input[name="nuevaPuerta"]');
+    const campoEsp    = document.getElementById("espigon-modificar");
+
+    if (campoFecha) campoFecha.value  = "";
+    if (campoHora) campoHora.value   = "";
+    if (campoPuerta) campoPuerta.value = "";
+    if (campoEsp) campoEsp.innerHTML = '<option value="">-- Seleccionar --</option>';
+    if (infoDiv) infoDiv.textContent = "";
+
+    if (!id) return;
+    const v = cacheVuelos.find(v => String(v.idVuelo) === String(id));
+    if (!v) return;
+
+    let fechaStr = "(sin fecha)";
+    if (v.fecha) {
+      const d = new Date(v.fecha);
+      fechaStr = d.toLocaleDateString("es-CL");
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      if (campoFecha) campoFecha.value = `${y}-${m}-${day}`;
+    }
+
+    if (campoHora && v.horaProgramada) campoHora.value = v.horaProgramada;
+    if (campoPuerta && v.puerta) campoPuerta.value = v.puerta;
+
+    if (campoEsp) {
+      actualizarOpcionesEspigon(campoEsp, v.terminal || "");
+      if (v.espigon) campoEsp.value = v.espigon;
+    }
+
+    if (infoDiv) {
+      infoDiv.textContent = `Actual: ${fechaStr}, puerta ${v.puerta || "-"}, espigón ${v.espigon || "-"}, terminal ${v.terminal || "-"}`;
+    }
+  }
+
+  // ========= UTIL: convertir fecha dd-mm-aaaa a yyyy-mm-dd =========
+  function convertirFechaAISO(fechaStr){
+    if (!fechaStr) return "";
+    const parts = fechaStr.trim().split(/[-\/]/);
+    if (parts.length !== 3) return "";
+    let [d,m,y] = parts;
+    if (y.length === 2) y = "20" + y;
+    return `${y.padStart(4,"0")}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
+  }
+
+  // ========= LECTOR GENÉRICO (CSV / EXCEL) =========
+  async function leerArchivoComoTexto(file){
+    const name = file.name.toLowerCase();
+    if (name.endsWith(".csv") || name.endsWith(".txt")) {
+      return await file.text();
+    } else if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
+      const data = await file.arrayBuffer();
+      const wb = XLSX.read(data, {type:"array"});
+      const firstSheet = wb.SheetNames[0];
+      const sheet = wb.Sheets[firstSheet];
+      // lo convertimos internamente a CSV para procesar igual que un .csv
+      return XLSX.utils.sheet_to_csv(sheet);
+    } else {
+      throw new Error("Formato no soportado. Usa CSV, XLSX o XLS.");
+    }
+  }
+
+  // ========= CARGA DATOS DESDE API =========
+  async function cargarDatos(){
+    const estadoApi = document.getElementById("estado-api");
+    try{
+      const res = await fetch(API_URL + "?action=listAll");
+      const data = await res.json();
+      if(!data.ok){
+        if (estadoApi) estadoApi.textContent = "Error";
+        console.error(data.error);
+        return;
+      }
+      if (estadoApi) estadoApi.textContent = "Conectado";
+
+      cacheVuelos = data.vuelos || [];
+
+      renderVuelos(data.vuelos || []);
+      renderPasajeros(data.pasajeros || []);
+      renderAgentes(data.agentes || []);
+      renderAsignaciones(data.asignaciones || []);
+
+      llenarSelectVuelos();
+    }catch(err){
+      console.error(err);
+      if (estadoApi) estadoApi.textContent = "Error de conexión";
+    }
+  }
+
+  function renderVuelos(vuelos){
+    const tbody = document.getElementById("tbody-vuelos");
+    const empty = document.getElementById("empty-vuelos");
+    if (!tbody || !empty) return;
+    tbody.innerHTML = "";
+    if(!vuelos.length){
+      empty.style.display = "block";
+      return;
+    }
+    empty.style.display = "none";
+    vuelos.forEach(v=>{
+      const tr = document.createElement("tr");
+      const fechaStr = v.fecha ? new Date(v.fecha).toLocaleDateString("es-CL") : "";
+      tr.innerHTML = `
+        <td>${v.idVuelo||""}</td>
+        <td>${fechaStr}</td>
+        <td>${v.horaProgramada||""}</td>
+        <td>${v.aerolinea||""}</td>
+        <td>${v.numeroVuelo||""}</td>
+        <td>${v.terminal||""}</td>
+        <td>${v.puerta||""}</td>
+        <td>${v.espigon||""}</td>
+        <td>${v.cantPmr||0}</td>
+        <td>${v.tipoServicio||""}</td>
+        <td>${v.estadoVuelo||""}</td>
+        <td>${v.observaciones||""}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderPasajeros(pasajeros){
+    const tbody = document.getElementById("tbody-pasajeros");
+    const empty = document.getElementById("empty-pasajeros");
+    if (!tbody || !empty) return;
+    tbody.innerHTML = "";
+    if(!pasajeros.length){
+      empty.style.display = "block";
+      return;
+    }
+    empty.style.display = "none";
+    pasajeros.forEach(p=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${p.idPmr||""}</td>
+        <td>${p.vuelo||""}</td>
+        <td>${p.nombre||""}</td>
+        <td>${p.tipoAsistencia||""}</td>
+        <td>${p.edad||""}</td>
+        <td>${p.origen||""}</td>
+        <td>${p.destino||""}</td>
+        <td>${p.estadoPmr||""}</td>
+        <td>${p.idAgente||""}</td>
+        <td>${p.observaciones||""}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderAgentes(agentes){
+    const tbody = document.getElementById("tbody-agentes");
+    const empty = document.getElementById("empty-agentes");
+    if (!tbody || !empty) return;
+    tbody.innerHTML = "";
+    if(!agentes.length){
+      empty.style.display = "block";
+      return;
+    }
+    empty.style.display = "none";
+    agentes.forEach(a=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${a.idAgente||""}</td>
+        <td>${a.nombre||""}</td>
+        <td>${a.rut||""}</td>
+        <td>${a.telefono||""}</td>
+        <td>${a.estado||""}</td>
+        <td>${a.estadoServicio||""}</td>
+        <td>${a.ultimoServicio||""}</td>
+        <td>${a.observaciones||""}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderAsignaciones(asig){
+    const tbody = document.getElementById("tbody-asignaciones");
+    const empty = document.getElementById("empty-asignaciones");
+    if (!tbody || !empty) return;
+    tbody.innerHTML = "";
+    if(!asig.length){
+      empty.style.display = "block";
+      return;
+    }
+    empty.style.display = "none";
+    asig.forEach(a=>{
+      const tr = document.createElement("tr");
+      const fStr = a.fechaAsignacion ? new Date(a.fechaAsignacion).toLocaleDateString("es-CL") : "";
+      tr.innerHTML = `
+        <td>${a.idAsignacion||""}</td>
+        <td>${a.idVuelo||""}</td>
+        <td>${a.idPmr||""}</td>
+        <td>${a.idAgente||""}</td>
+        <td>${fStr}</td>
+        <td>${a.horaAsignacion||""}</td>
+        <td>${a.horaInicio||""}</td>
+        <td>${a.horaFin||""}</td>
+        <td>${a.estadoAsignacion||""}</td>
+        <td>${a.observaciones||""}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function llenarSelectVuelos(){
+    const selMod = document.getElementById("select-vuelo-modificar");
+    const selPas = document.getElementById("select-vuelo-pasajero");
+    if (!selMod || !selPas) return;
+
+    selMod.innerHTML = '<option value="">-- Seleccionar vuelo --</option>';
+    selPas.innerHTML = '<option value="">-- Seleccionar vuelo --</option>';
+
+    const hoy = new Date();
+    const y = hoy.getFullYear();
+    const m = String(hoy.getMonth()+1).padStart(2,'0');
+    const d = String(hoy.getDate()).padStart(2,'0');
+    const hoyIso = `${y}-${m}-${d}`;
+
+    cacheVuelos.forEach(v=>{
+      let esHoy = false;
+      if (v.fecha) {
+        const dv = new Date(v.fecha);
+        const vy = dv.getFullYear();
+        const vm = String(dv.getMonth()+1).padStart(2,'0');
+        const vd = String(dv.getDate()).padStart(2,'0');
+        const fechaVueloIso = `${vy}-${vm}-${vd}`;
+        esHoy = (fechaVueloIso === hoyIso);
+      }
+      if (esHoy) {
+        const opt1 = document.createElement("option");
+        const fechaStr = v.fecha ? new Date(v.fecha).toLocaleDateString("es-CL") : "";
+        opt1.value = v.idVuelo;
+        opt1.textContent = `${v.numeroVuelo || ""} | ${v.aerolinea || ""} | ${fechaStr}`;
+        selMod.appendChild(opt1);
+      }
+
+      const opt2 = document.createElement("option");
+      opt2.value = v.numeroVuelo;
+      opt2.textContent = `${v.numeroVuelo || ""} | ${v.aerolinea || ""}`;
+      selPas.appendChild(opt2);
+    });
+  }
+
+  // ========= FORMULARIO: CREAR VUELO =========
+  document.getElementById("form-crear-vuelo").addEventListener("submit", async (ev)=>{
+    ev.preventDefault();
+    const form = ev.target;
+    const msg = document.getElementById("msg-crear-vuelo");
+    if (!msg) return;
+    msg.textContent = "Enviando...";
+    msg.className = "msg";
+
+    const params = new URLSearchParams(new FormData(form));
+    params.append("action", "createVuelo");
+
+    try {
+      const res = await fetch(API_URL + "?" + params.toString());
+      const json = await res.json();
+      if (json.ok) {
+        const cant = Number(form.cantPmr.value || 0);
+        const numVuelo = form.numeroVuelo.value;
+        let texto = "Vuelo creado con ID " + (json.idVuelo || "");
+        if (cant > 0) {
+          texto += `. Debes crear ${cant} pasajero(s) PMR para el vuelo ${numVuelo}.`;
+        }
+        msg.textContent = texto;
+        msg.className = "msg ok";
+
+        await cargarDatos();
+
+        // Si hay PMR, saltar directo a "Crear Pasajero" con el vuelo seleccionado
+        if (cant > 0) {
+          const selPas = document.getElementById("select-vuelo-pasajero");
+          if (selPas) selPas.value = numVuelo;
+          const btnPas = document.querySelector('.action-tab-btn[data-action="crearPasajero"]');
+          if (btnPas) {
+            selectAction('crearPasajero', btnPas);
+          }
+        }
+
+        form.reset();
+        actualizarEspigonCrear();
+      } else {
+        msg.textContent = "Error: " + (json.error || "");
+        msg.className = "msg err";
+        console.error(json);
+      }
+    } catch (err) {
+      msg.textContent = "Error de conexión";
+      msg.className = "msg err";
+      console.error(err);
+    }
+  });
+
+  // ========= FORMULARIO: MODIFICAR VUELO =========
+  document.getElementById("form-modificar-vuelo").addEventListener("submit", async (ev)=>{
+    ev.preventDefault();
+    const form = ev.target;
+    const msg = document.getElementById("msg-modificar-vuelo");
+    if (!msg) return;
+    msg.textContent = "Enviando...";
+    msg.className = "msg";
+
+    const params = new URLSearchParams(new FormData(form));
+    params.append("action", "modificarVuelo");
+
+    try {
+      const res = await fetch(API_URL + "?" + params.toString());
+      const json = await res.json();
+      if (json.ok) {
+        msg.textContent = "Vuelo modificado correctamente";
+        msg.className = "msg ok";
+        form.reset();
+        const infoDiv = document.getElementById("info-vuelo-modificar");
+        if (infoDiv) infoDiv.textContent = "";
+        await cargarDatos();
+      } else {
+        msg.textContent = "Error: " + (json.error || "");
+        msg.className = "msg err";
+        console.error(json);
+      }
+    } catch (err) {
+      msg.textContent = "Error de conexión";
+      msg.className = "msg err";
+      console.error(err);
+    }
+  });
+
+  // ========= FORMULARIO: CREAR PASAJERO =========
+  document.getElementById("form-crear-pasajero").addEventListener("submit", async (ev)=>{
+    ev.preventDefault();
+    const form = ev.target;
+    const msg = document.getElementById("msg-crear-pasajero");
+    if (!msg) return;
+    msg.textContent = "Enviando...";
+    msg.className = "msg";
+
+    const params = new URLSearchParams(new FormData(form));
+    params.append("action", "crearPasajero");
+
+    try {
+      const res = await fetch(API_URL + "?" + params.toString());
+      const json = await res.json();
+      if (json.ok) {
+        msg.textContent = "Pasajero creado con ID " + (json.idPmr || "");
+        msg.className = "msg ok";
+        form.reset();
+        await cargarDatos();
+      } else {
+        msg.textContent = "Error: " + (json.error || "");
+        msg.className = "msg err";
+        console.error(json);
+      }
+    } catch (err) {
+      msg.textContent = "Error de conexión";
+      msg.className = "msg err";
+      console.error(err);
+    }
+  });
+
+  // ========= CARGA MASIVA (con progreso y detalle de errores) =========
+  async function procesarCargaMasiva(){
+    const input = document.getElementById("file-carga-masiva");
+    const msg = document.getElementById("msg-carga-masiva");
+    const btnDescargar = document.getElementById("btn-descargar-errores");
+
+    if (!msg) return;
+
+    msg.textContent = "";
+    msg.className = "msg";
+    erroresCargaDetalle = [];
+    if (btnDescargar) btnDescargar.style.display = "none";
+
+    if (!input || !input.files || !input.files.length) {
+      msg.textContent = "Selecciona un archivo.";
       msg.className = "msg err";
       return;
     }
 
-    const totalFilas = lines.length - 1;
-    msg.textContent = `Archivo leído. Filas de datos: ${totalFilas}. Preparando vuelos y pasajeros (fase 1/3)...`;
+    const file = input.files[0];
 
-    const vuelosMap = new Map();
-    const pasajeros = [];
+    try {
+      msg.textContent = "Leyendo archivo...";
+      let text = await leerArchivoComoTexto(file);
 
-    // A: Nombre_PMR
-    // B: RUT
-    // C: Edad
-    // D: Fecha_Vuelo
-    // E: Hora
-    // F: Tipo_Vuelo
-    // G: Vuelo
-    // H: Aerolínea
-    // I: Terminal
-    // J: Origen
-    // K: Destino
-    // L: Puerta
-    // M: Espigón
-    // N: Tipo_PMR
-    // O: Observaciones
-
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
-
-      const cols = line.split(/[,;](?=(?:[^"]*"[^"]*")*[^"]*$)/);
-      if (cols.length < 15) continue;
-
-      let [
-        nombre,
-        rut,
-        edad,
-        fechaV,
-        horaV,
-        tipoV,
-        vuelo,
-        aerolinea,
-        terminal,
-        origen,
-        destino,
-        puerta,
-        espigon,
-        tipoPmr,
-        obs
-      ] = cols.map(c => c.replace(/^"|"$/g, "").trim());
-
-      if (!vuelo) continue;
-
-      const fechaISO = convertirFechaAISO(fechaV);
-
-      const key = [
-        fechaISO || fechaV,
-        horaV,
-        vuelo,
-        tipoV,
-        aerolinea,
-        terminal,
-        puerta,
-        espigon
-      ].join("|");
-
-      let entry = vuelosMap.get(key);
-      if (!entry) {
-        entry = {
-          fecha: fechaISO,
-          horaProgramada: horaV,
-          numeroVuelo: vuelo,
-          tipoServicio: tipoV,
-          aerolinea: aerolinea,
-          terminal: terminal,
-          puerta: puerta,
-          espigon: espigon,
-          cantPmr: 0
-        };
-        vuelosMap.set(key, entry);
+      const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
+      if (lines.length <= 1) {
+        msg.textContent = "El archivo no contiene datos (solo encabezado?).";
+        msg.className = "msg err";
+        return;
       }
-      entry.cantPmr++;
 
-      pasajeros.push({
-        vuelo,
-        nombre,
-        rut,
-        edad,
-        origen,
-        destino,
-        tipoAsistencia: tipoPmr,
-        observaciones: obs
-      });
+      const totalFilas = lines.length - 1;
+      msg.textContent = `Archivo leído. Filas de datos: ${totalFilas}. Preparando vuelos y pasajeros (fase 1/3)...`;
 
-      if ((i % 10) === 0) {
-        msg.textContent = `Preparando datos (fase 1/3): ${i}/${lines.length - 1} filas...`;
-      }
-    }
+      const vuelosMap = new Map();
+      const pasajeros = [];
 
-    // --- llamar a la API ---
-    let vuelosCreados = 0;
-    let pasajerosCreados = 0;
-    let errores = 0;
-    const detallesErrores = [];
+      // Columnas esperadas:
+      // A: Nombre_PMR
+      // B: RUT
+      // C: Edad
+      // D: Fecha_Vuelo
+      // E: Hora
+      // F: Tipo_Vuelo
+      // G: Vuelo
+      // H: Aerolínea
+      // I: Terminal
+      // J: Origen
+      // K: Destino
+      // L: Puerta
+      // M: Espigón
+      // N: Tipo_PMR
+      // O: Observaciones
 
-    // 2/3: crear vuelos
-    let idxVuelo = 0;
-    const totalVuelosUnicos = vuelosMap.size;
-    msg.textContent = `Enviando vuelos a la API (fase 2/3): 0/${totalVuelosUnicos}...`;
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
 
-    for (const entry of vuelosMap.values()) {
-      idxVuelo++;
-      const params = new URLSearchParams();
-      params.append("action","createVuelo");
-      if (entry.fecha) params.append("fecha", entry.fecha);
-      params.append("horaProgramada", entry.horaProgramada || "");
-      params.append("aerolinea", entry.aerolinea || "");
-      params.append("numeroVuelo", entry.numeroVuelo || "");
-      params.append("terminal", entry.terminal || "");
-      params.append("puerta", entry.puerta || "");
-      params.append("espigon", entry.espigon || "");
-      params.append("cantPmr", String(entry.cantPmr || 0));
-      params.append("tipoServicio", entry.tipoServicio || "");
-      params.append("observaciones", "Carga masiva");
-
-      try{
-        const res = await fetch(API_URL + "?" + params.toString());
-        const json = await res.json();
-        if (json.ok) {
-          vuelosCreados++;
-        } else {
-          errores++;
-          if (detallesErrores.length < 5) {
-            detallesErrores.push(`Vuelo ${entry.numeroVuelo}: ${json.error || "error en createVuelo"}`);
-          }
-          console.log("Error createVuelo:", entry, json);
+        const cols = line.split(/[,;](?=(?:[^"]*"[^"]*")*[^"]*$)/);
+        if (cols.length < 15) {
+          erroresCargaDetalle.push({
+            tipo: "fila",
+            filaArchivo: i+1,
+            nombre: "",
+            vuelo: "",
+            mensaje: "Cantidad de columnas insuficiente"
+          });
+          continue;
         }
-      }catch(err){
-        console.log("Error de red createVuelo:", entry, err);
-        errores++;
-        if (detallesErrores.length < 5) {
-          detallesErrores.push(`Vuelo ${entry.numeroVuelo}: error de red`);
+
+        let [
+          nombre,
+          rut,
+          edad,
+          fechaV,
+          horaV,
+          tipoV,
+          vuelo,
+          aerolinea,
+          terminal,
+          origen,
+          destino,
+          puerta,
+          espigon,
+          tipoPmr,
+          obs
+        ] = cols.map(c => c.replace(/^"|"$/g, "").trim());
+
+        if (!vuelo) {
+          erroresCargaDetalle.push({
+            tipo: "fila",
+            filaArchivo: i+1,
+            nombre,
+            vuelo: "",
+            mensaje: "Fila sin número de vuelo"
+          });
+          continue;
+        }
+
+        const fechaISO = convertirFechaAISO(fechaV);
+
+        const key = [
+          fechaISO || fechaV,
+          horaV,
+          vuelo,
+          tipoV,
+          aerolinea,
+          terminal,
+          puerta,
+          espigon
+        ].join("|");
+
+        let entry = vuelosMap.get(key);
+        if (!entry) {
+          entry = {
+            fecha: fechaISO,
+            horaProgramada: horaV,
+            numeroVuelo: vuelo,
+            tipoServicio: tipoV,
+            aerolinea: aerolinea,
+            terminal: terminal,
+            puerta: puerta,
+            espigon: espigon,
+            cantPmr: 0
+          };
+          vuelosMap.set(key, entry);
+        }
+        entry.cantPmr++;
+
+        pasajeros.push({
+          filaArchivo: i+1,
+          vuelo,
+          nombre,
+          rut,
+          edad,
+          origen,
+          destino,
+          tipoAsistencia: tipoPmr,
+          observaciones: obs
+        });
+
+        if ((i % 10) === 0) {
+          msg.textContent = `Preparando datos (fase 1/3): ${i}/${lines.length - 1} filas...`;
         }
       }
-
-      if ((idxVuelo % 5) === 0) {
-        msg.textContent = `Enviando vuelos a la API (fase 2/3): ${idxVuelo}/${totalVuelosUnicos}...`;
-      }
-    }
-
-    // 3/3: crear pasajeros
-    let idxPas = 0;
-    msg.textContent = `Enviando pasajeros a la API (fase 3/3): 0/${pasajeros.length}...`;
-
-    for (const p of pasajeros) {
-      idxPas++;
-      const params = new URLSearchParams();
-      params.append("action","crearPasajero");
-      params.append("vuelo", p.vuelo);
-      params.append("nombre", p.nombre || "");
-      params.append("tipoAsistencia", p.tipoAsistencia || "");
-      params.append("edad", p.edad || "");
-      params.append("origen", p.origen || "");
-      params.append("destino", p.destino || "");
-      params.append("observaciones", p.observaciones || "");
-      params.append("rut", p.rut || "");
-
-      try{
-        const res = await fetch(API_URL + "?" + params.toString());
-        const json = await res.json();
-        if (json.ok) {
-          pasajerosCreados++;
-        } else {
-          errores++;
-          if (detallesErrores.length < 5) {
-            detallesErrores.push(`Pasajero ${p.nombre} (${p.vuelo}): ${json.error || "error en crearPasajero"}`);
-          }
-          console.log("Error crearPasajero:", p, json);
-        }
-      }catch(err){
-        console.log("Error de red crearPasajero:", p, err);
-        errores++;
-        if (detallesErrores.length < 5) {
-          detallesErrores.push(`Pasajero ${p.nombre} (${p.vuelo}): error de red`);
-        }
-      }
-
-      if ((idxPas % 10) === 0) {
-        msg.textContent = `Enviando pasajeros a la API (fase 3/3): ${idxPas}/${pasajeros.length}...`;
-      }
-    }
-
-    await cargarDatos();
-
-    let resumen = `Carga masiva completada. Vuelos creados: ${vuelosCreados}. Pasajeros creados: ${pasajerosCreados}. Errores: ${errores}.`;
-    if (detallesErrores.length) {
-      resumen += ` Ejemplos de error: ${detallesErrores.join(" | ")}`;
-    }
-    msg.textContent = resumen;
-    msg.className = errores ? "msg err" : "msg ok";
-
-  } catch (err) {
-    console.error(err);
-    msg.textContent = err.message || "Error general al procesar la carga.";
-    msg.className = "msg err";
-  }
-}
-
 
       let vuelosCreados = 0;
       let pasajerosCreados = 0;
       let errores = 0;
+      const detallesErrores = [];
+
+      // 2/3: crear vuelos
+      let idxVuelo = 0;
+      const totalVuelosUnicos = vuelosMap.size;
+      msg.textContent = `Enviando vuelos a la API (fase 2/3): 0/${totalVuelosUnicos}...`;
 
       for (const entry of vuelosMap.values()) {
+        idxVuelo++;
         const params = new URLSearchParams();
         params.append("action","createVuelo");
         if (entry.fecha) params.append("fecha", entry.fecha);
@@ -1059,15 +1114,50 @@
         try{
           const res = await fetch(API_URL + "?" + params.toString());
           const json = await res.json();
-          if (json.ok) vuelosCreados++;
-          else errores++;
+          if (json.ok) {
+            vuelosCreados++;
+          } else {
+            errores++;
+            const msgErr = json.error || "error en createVuelo";
+            if (detallesErrores.length < 5) {
+              detallesErrores.push(`Vuelo ${entry.numeroVuelo}: ${msgErr}`);
+            }
+            erroresCargaDetalle.push({
+              tipo: "vuelo",
+              filaArchivo: null,
+              nombre: entry.numeroVuelo,
+              vuelo: entry.numeroVuelo,
+              mensaje: msgErr
+            });
+            console.log("Error createVuelo:", entry, json);
+          }
         }catch(err){
-          console.error(err);
           errores++;
+          const msgErr = "error de red";
+          if (detallesErrores.length < 5) {
+            detallesErrores.push(`Vuelo ${entry.numeroVuelo}: ${msgErr}`);
+          }
+          erroresCargaDetalle.push({
+            tipo: "vuelo",
+            filaArchivo: null,
+            nombre: entry.numeroVuelo,
+            vuelo: entry.numeroVuelo,
+            mensaje: msgErr
+          });
+          console.log("Error de red createVuelo:", entry, err);
+        }
+
+        if ((idxVuelo % 5) === 0) {
+          msg.textContent = `Enviando vuelos a la API (fase 2/3): ${idxVuelo}/${totalVuelosUnicos}...`;
         }
       }
 
+      // 3/3: crear pasajeros
+      let idxPas = 0;
+      msg.textContent = `Enviando pasajeros a la API (fase 3/3): 0/${pasajeros.length}...`;
+
       for (const p of pasajeros) {
+        idxPas++;
         const params = new URLSearchParams();
         params.append("action","crearPasajero");
         params.append("vuelo", p.vuelo);
@@ -1082,27 +1172,118 @@
         try{
           const res = await fetch(API_URL + "?" + params.toString());
           const json = await res.json();
-          if (json.ok) pasajerosCreados++;
-          else errores++;
+          if (json.ok) {
+            pasajerosCreados++;
+          } else {
+            errores++;
+            const msgErr = json.error || "error en crearPasajero";
+            if (detallesErrores.length < 5) {
+              detallesErrores.push(`Pasajero ${p.nombre} (${p.vuelo}): ${msgErr}`);
+            }
+            erroresCargaDetalle.push({
+              tipo: "pasajero",
+              filaArchivo: p.filaArchivo,
+              nombre: p.nombre,
+              vuelo: p.vuelo,
+              mensaje: msgErr
+            });
+            console.log("Error crearPasajero:", p, json);
+          }
         }catch(err){
-          console.error(err);
           errores++;
+          const msgErr = "error de red";
+          if (detallesErrores.length < 5) {
+            detallesErrores.push(`Pasajero ${p.nombre} (${p.vuelo}): ${msgErr}`);
+          }
+          erroresCargaDetalle.push({
+            tipo: "pasajero",
+            filaArchivo: p.filaArchivo,
+            nombre: p.nombre,
+            vuelo: p.vuelo,
+            mensaje: msgErr
+          });
+          console.log("Error de red crearPasajero:", p, err);
+        }
+
+        if ((idxPas % 10) === 0) {
+          msg.textContent = `Enviando pasajeros a la API (fase 3/3): ${idxPas}/${pasajeros.length}...`;
         }
       }
 
       await cargarDatos();
 
-      msg.textContent = `Carga masiva completada. Vuelos creados: ${vuelosCreados}. Pasajeros creados: ${pasajerosCreados}. Errores: ${errores}.`;
+      let resumen = `Carga masiva completada. Vuelos creados: ${vuelosCreados}. Pasajeros creados: ${pasajerosCreados}. Errores: ${errores}.`;
+      if (detallesErrores.length) {
+        resumen += ` Ejemplos de error: ${detallesErrores.join(" | ")}`;
+      }
+      msg.textContent = resumen;
       msg.className = errores ? "msg err" : "msg ok";
+
+      if (erroresCargaDetalle.length && btnDescargar) {
+        btnDescargar.style.display = "block";
+      }
+
+    } catch (err) {
+      console.error(err);
+      msg.textContent = err.message || "Error general al procesar la carga.";
+      msg.className = "msg err";
+    }
+  }
+
+  // ========= DESCARGAR CSV DE ERRORES =========
+  function descargarErroresCarga(){
+    if (!erroresCargaDetalle.length) {
+      alert("No hay errores para descargar.");
+      return;
     }
 
-    // ========= LISTENERS INICIALES =========
-    document.getElementById("terminal-crear").addEventListener("change", actualizarEspigonCrear);
-    document.getElementById("select-vuelo-modificar").addEventListener("change", onCambioVueloModificar);
-    document.getElementById("btn-procesar-carga").addEventListener("click", procesarCargaMasiva);
+    let lineas = ["Tipo;FilaArchivo;Nombre;Vuelo;MensajeError"];
+    erroresCargaDetalle.forEach(e => {
+      lineas.push(
+        `${e.tipo||""};${e.filaArchivo||""};${e.nombre||""};${e.vuelo||""};${e.mensaje||""}`
+      );
+    });
 
-    actualizarEspigonCrear();
-    cargarDatos();
-  </script>
+    const csv = lineas.join("\r\n");
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Errores_Carga_PMR.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ========= EVENTOS INICIALES =========
+  const terminalCrear = document.getElementById("terminal-crear");
+  if (terminalCrear) {
+    terminalCrear.addEventListener("change", actualizarEspigonCrear);
+  }
+
+  const selMod = document.getElementById("select-vuelo-modificar");
+  if (selMod) {
+    selMod.addEventListener("change", onCambioVueloModificar);
+  }
+
+  const btnCarga = document.getElementById("btn-procesar-carga");
+  if (btnCarga) {
+    btnCarga.addEventListener("click", procesarCargaMasiva);
+  }
+
+  const btnDescargarErr = document.getElementById("btn-descargar-errores");
+  if (btnDescargarErr) {
+    btnDescargarErr.addEventListener("click", descargarErroresCarga);
+  }
+
+  // Inicializar
+  actualizarEspigonCrear();
+  cargarDatos();
+</script>
+
+
 </body>
 </html>
+
