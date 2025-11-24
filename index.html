@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Cargo Mobility PMR – Panel</title>
+  <title>Cargo Mobility PMR – Panel Supervisor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Librería para leer Excel (.xlsx / .xls) -->
@@ -10,85 +10,327 @@
 
   <style>
     * { box-sizing:border-box; margin:0; padding:0; }
-    body { font-family:Arial, sans-serif; background:#f3f4f6; color:#111827; }
+    body {
+      font-family:Arial, sans-serif;
+      background:#111827;
+      color:#0b1020;
+    }
 
+    /* HEADER – azul institucional */
     header{
-      background:linear-gradient(90deg,#111827,#1f2937);
+      background:linear-gradient(90deg,#1e3a8a,#1d4ed8,#3b82f6);
       color:#fff;
       padding:10px 18px;
       display:flex;
       justify-content:space-between;
       align-items:center;
+      box-shadow:0 4px 14px rgba(0,0,0,.6);
+      border-bottom:2px solid rgba(59,130,246,.7);
     }
     header .brand{display:flex;flex-direction:column;}
-    header .brand-name{font-size:18px;font-weight:bold;}
-    header .brand-sub{font-size:11px;opacity:.8;}
-    header .status{font-size:11px;text-align:right;opacity:.9;}
+    header .brand-name{font-size:18px;font-weight:bold;letter-spacing:.03em;}
+    header .brand-sub{font-size:11px;opacity:.9;}
+    header .status{font-size:11px;text-align:right;opacity:.95;}
 
-    .app{display:flex;height:calc(100vh - 52px);}
+    .app{
+      display:flex;
+      height:calc(100vh - 52px);
+      background:
+        radial-gradient(circle at top left, rgba(59,130,246,.14), transparent 60%),
+        radial-gradient(circle at bottom right, rgba(248,113,113,.15), transparent 55%),
+        linear-gradient(135deg,#111827,#020617 55%,#1f2937);
+    }
+
+    /* SIDEBAR – fondo azul, acentos rojos */
     .sidebar{
-      width:320px;background:#111827;color:#e5e7eb;
-      padding:12px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;
+      width:320px;
+      background:radial-gradient(circle at top,#1e3a8a,#1d4ed8 60%,#111827 100%);
+      color:#e5e7eb;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      overflow-y:auto;
+      border-right:1px solid rgba(59,130,246,.7);
+      box-shadow:4px 0 20px rgba(0,0,0,.6);
     }
+
     .sidebar-section-title{
-      font-size:12px;text-transform:uppercase;letter-spacing:.08em;
-      color:#9ca3af;margin-bottom:4px;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      color:#bfdbfe;
+      margin-bottom:4px;
     }
+
     .nav{display:flex;flex-direction:column;gap:4px;}
     .nav-btn{
-      border:none;border-radius:6px;background:#1f2937;color:#e5e7eb;
-      padding:6px 8px;font-size:12px;text-align:left;cursor:pointer;
-      transition:background .15s,transform .05s;
+      border:none;
+      border-radius:8px;
+      background:linear-gradient(120deg,#7f1d1d,#b91c1c);
+      color:#e5e7eb;
+      padding:7px 10px;
+      font-size:12px;
+      text-align:left;
+      cursor:pointer;
+      transition:background .15s,transform .05s, box-shadow .15s, border .15s;
+      box-shadow:0 2px 6px rgba(15,23,42,.7);
+      border:1px solid rgba(254,226,226,.9);
     }
-    .nav-btn:hover{background:#374151;transform:translateY(-1px);}
-    .nav-btn.active{background:#2563eb;color:#fff;}
+    .nav-btn:hover{
+      background:linear-gradient(120deg,#b91c1c,#ef4444);
+      transform:translateY(-1px);
+      box-shadow:0 4px 10px rgba(15,23,42,.8);
+    }
+    .nav-btn.active{
+      background:linear-gradient(120deg,#1d4ed8,#3b82f6);
+      color:#fef2f2;
+      font-weight:600;
+      border:1px solid rgba(191,219,254,.9);
+      box-shadow:0 4px 10px rgba(30,64,175,.8);
+    }
 
-    .actions-box{background:#020617;border-radius:10px;padding:8px;font-size:12px;}
-    .action-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;margin-bottom:6px;}
+    .actions-box{
+      background:#0b1020;
+      border-radius:14px;
+      padding:10px;
+      font-size:12px;
+      border:1px solid rgba(248,113,113,.7);
+      box-shadow:0 8px 22px rgba(15,23,42,.9);
+      position:relative;
+      overflow:hidden;
+    }
+    .actions-box::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:
+        linear-gradient(90deg, rgba(248,113,113,.18) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(248,113,113,.18) 1px, transparent 1px);
+      background-size:20px 20px;
+      opacity:.25;
+      pointer-events:none;
+    }
+    .actions-box > *{position:relative;z-index:1;}
+
+    .action-tabs{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:4px;
+      margin-bottom:6px;
+    }
     .action-tab-btn{
-      border:none;border-radius:6px;background:#1f2937;color:#e5e7eb;
-      padding:4px 6px;font-size:11px;cursor:pointer;text-align:center;
-      transition:background .15s;
+      border:none;
+      border-radius:8px;
+      background:rgba(15,23,42,.95);
+      color:#e5e7eb;
+      padding:4px 6px;
+      font-size:11px;
+      cursor:pointer;
+      text-align:center;
+      transition:background .15s, box-shadow .15s, transform .05s, border .15s;
+      border:1px solid rgba(248,113,113,.7);
     }
-    .action-tab-btn.active{background:#10b981;color:#022c22;font-weight:600;}
+    .action-tab-btn:hover{
+      background:linear-gradient(135deg,#b91c1c,#ef4444);
+      box-shadow:0 3px 8px rgba(15,23,42,.9);
+      transform:translateY(-1px);
+    }
+    .action-tab-btn.active{
+      background:linear-gradient(135deg,#1d4ed8,#3b82f6);
+      color:#fef2f2;
+      font-weight:600;
+      box-shadow:0 4px 10px rgba(0,0,0,.8);
+      border:1px solid rgba(191,219,254,.95);
+    }
 
-    .action-form{margin-top:4px;border-radius:8px;background:#020617;padding:6px;}
+    .action-form{
+      margin-top:6px;
+      border-radius:10px;
+      background:radial-gradient(circle at top left,#0f172a,#020617 60%,#020617 100%);
+      padding:8px;
+      box-shadow:inset 0 0 0 1px rgba(248,113,113,.7);
+    }
     .action-form.hidden{display:none;}
-    label{display:block;margin-top:6px;font-size:11px;}
-    input[type="text"],input[type="number"],input[type="date"],input[type="time"],select,textarea{
-      width:100%;margin-top:2px;padding:4px;border-radius:4px;border:1px solid #4b5563;
-      background:#111827;color:#e5e7eb;font-size:12px;
+
+    label{
+      display:block;
+      margin-top:6px;
+      font-size:11px;
+      color:#e5e7eb;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    select,
+    textarea{
+      width:100%;
+      margin-top:2px;
+      padding:4px 6px;
+      border-radius:6px;
+      border:1px solid #374151;
+      background:#020617;
+      color:#e5e7eb;
+      font-size:12px;
+      outline:none;
+      transition:border .12s, box-shadow .12s, background .12s;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    input[type="time"]:focus,
+    select:focus,
+    textarea:focus{
+      border-color:#ef4444;
+      box-shadow:0 0 0 1px rgba(248,113,113,.85);
+      background:#020617;
     }
     textarea{resize:vertical;min-height:52px;}
     input[type="file"]{
-      width:100%;margin-top:4px;padding:4px;border-radius:4px;border:1px solid #4b5563;
-      background:#111827;color:#e5e7eb;font-size:12px;
+      width:100%;
+      margin-top:4px;
+      padding:4px;
+      border-radius:6px;
+      border:1px solid #374151;
+      background:#020617;
+      color:#e5e7eb;
+      font-size:12px;
     }
+
     .btn-submit{
-      margin-top:8px;padding:6px 10px;border:none;border-radius:6px;
-      background:#2563eb;color:#fff;font-size:12px;cursor:pointer;
+      margin-top:8px;
+      padding:7px 10px;
+      border:none;
+      border-radius:999px;
+      background:linear-gradient(120deg,#b91c1c,#ef4444);
+      color:#fef2f2;
+      font-size:12px;
+      cursor:pointer;
+      box-shadow:0 3px 8px rgba(15,23,42,.9);
+      transition:background .15s, box-shadow .15s, transform .05s;
+      width:100%;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:600;
     }
-    .btn-submit:hover{background:#1d4ed8;}
-    .helper-text{font-size:10px;color:#9ca3af;margin-top:4px;}
-    .msg{font-size:11px;margin-top:4px;}
-    .msg.ok{color:#22c55e;}
-    .msg.err{color:#f97316;}
+    .btn-submit:hover{
+      background:linear-gradient(120deg,#ef4444,#f97373);
+      box-shadow:0 5px 12px rgba(15,23,42,1);
+      transform:translateY(-1px);
+    }
+    .btn-submit:disabled{
+      opacity:.6;
+      cursor:default;
+      box-shadow:none;
+    }
 
-    .main{flex:1;padding:10px 14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
-    .view-header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
-    .view-title{font-size:16px;font-weight:600;}
-    .view-filters{display:flex;gap:6px;flex-wrap:wrap;font-size:11px;}
-    .chip{border-radius:999px;border:1px solid #d1d5db;background:#f9fafb;padding:2px 8px;}
-    .chip-label{font-weight:600;margin-right:4px;}
+    .helper-text{
+      font-size:10px;
+      color:#9ca3af;
+      margin-top:4px;
+    }
+    .msg{font-size:11px;margin-top:4px;color:#e5e7eb;}
+    .msg.ok{color:#4ade80;}
+    .msg.err{color:#fb923c;}
 
-    .view-container{background:#fff;border-radius:10px;padding:8px;box-shadow:0 1px 3px rgba(15,23,42,.08);}
+    /* MAIN */
+    .main{
+      flex:1;
+      padding:10px 14px;
+      overflow-y:auto;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      background:
+        radial-gradient(circle at top,#1d4ed8 0,#111827 45%),
+        radial-gradient(circle at bottom,#7f1d1d 0,#020617 55%);
+    }
+
+    .view-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      color:#e5e7eb;
+    }
+    .view-title{
+      font-size:17px;
+      font-weight:700;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .view-filters{display:flex;gap:6px;flex-wrap:wrap;font-size:11px;align-items:center;}
+
+    .chip{
+      border-radius:999px;
+      border:1px solid rgba(59,130,246,.9);
+      background:linear-gradient(120deg,rgba(37,99,235,.25),rgba(248,113,113,.15));
+      padding:2px 10px;
+      color:#fef2f2;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      box-shadow:0 2px 6px rgba(15,23,42,.8);
+    }
+    .chip-label{font-weight:700;text-transform:uppercase;font-size:10px;}
+
+    .view-container{
+      background:radial-gradient(circle at top left,#020617,#020617 35%,#0b1120 100%);
+      border-radius:14px;
+      padding:10px;
+      box-shadow:0 14px 40px rgba(0,0,0,.85);
+      border-top:2px solid rgba(59,130,246,.9);
+      border-left:1px solid rgba(248,113,113,.7);
+    }
+
     .empty-state{
-      padding:16px;font-size:12px;color:#6b7280;text-align:center;
-      border-radius:8px;border:1px dashed #d1d5db;background:#f9fafb;margin-top:6px;
+      padding:16px;
+      font-size:12px;
+      color:#9ca3af;
+      text-align:center;
+      border-radius:10px;
+      border:1px dashed rgba(248,113,113,.7);
+      background:rgba(15,23,42,.9);
+      margin-top:6px;
     }
-    table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px;}
-    th,td{border:1px solid #e5e7eb;padding:4px 6px;text-align:left;white-space:nowrap;}
-    th{background:#111827;color:#f9fafb;position:sticky;top:0;z-index:1;}
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:11px;
+      margin-top:6px;
+      color:#e5e7eb;
+      border-radius:10px;
+      overflow:hidden;
+    }
+    th,td{
+      border:1px solid rgba(30,64,175,.7);
+      padding:4px 6px;
+      text-align:left;
+      white-space:nowrap;
+    }
+    th{
+      background:linear-gradient(90deg,#b91c1c,#dc2626,#f97373);
+      color:#fefce8;
+      position:sticky;
+      top:0;
+      z-index:1;
+      border-bottom:2px solid rgba(59,130,246,.85);
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      font-size:10px;
+    }
+    tr:nth-child(even){
+      background:rgba(15,23,42,.9);
+    }
+    tr:nth-child(odd){
+      background:rgba(17,24,39,.95);
+    }
+    tr:hover{
+      background:radial-gradient(circle at left,#2563eb 0,transparent 55%);
+    }
 
     .view-section{display:none;}
     .view-section.active{display:block;}
@@ -100,1190 +342,1573 @@
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <span class="brand-name">Cargo Mobility PMR</span>
-      <span class="brand-sub">Gestión de Vuelos, Pasajeros PMR y Agentes</span>
+<header>
+  <div class="brand">
+    <span class="brand-name">Cargo Mobility – PMR</span>
+    <span class="brand-sub">Panel Supervisor / CDO</span>
+  </div>
+  <div class="status">
+    <div id="api-status">Conectando con API...</div>
+    <div id="last-update">Última actualización: --</div>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <!-- VISTAS -->
+    <div>
+      <div class="sidebar-section-title">Vistas</div>
+      <div class="nav">
+        <button class="nav-btn active" data-view="vuelos">Vuelos</button>
+        <button class="nav-btn" data-view="pmr">Pasajeros PMR</button>
+        <button class="nav-btn" data-view="asignaciones">Asignaciones</button>
+        <button class="nav-btn" data-view="agentes">Agentes</button>
+      </div>
     </div>
-    <div class="status">
-      <div><strong>Conexión:</strong> <span id="estado-api">Desconectado</span></div>
-      <div style="font-size:10px;">Esta página usa Google Sheets + Apps Script como backend</div>
-    </div>
-  </header>
 
-	  <div class="app">
-		<!-- SIDEBAR -->
-		<aside class="sidebar">
-		  <div>
-			<div class="sidebar-section-title">Panel principal</div>
-			<div class="nav">
-			  <button class="nav-btn active" onclick="changeView('vuelos', this)">Vuelos</button>
-			  <button class="nav-btn" onclick="changeView('pasajeros', this)">Pasajeros PMR</button>
-			  <button class="nav-btn" onclick="changeView('agentes', this)">Agentes</button>
-			  <button class="nav-btn" onclick="changeView('asignaciones', this)">Asignaciones</button>
-			</div>
-		  </div>
-
-		  <div class="actions-box">
-	  <div class="sidebar-section-title">Acciones</div>
-	  <div class="action-tabs">
-		<button class="action-tab-btn active"
-				data-action="crearVuelo"
-				onclick="selectAction('crearVuelo', this)">
-		  Crear vuelo
-		</button>
-		<button class="action-tab-btn"
-				data-action="modificarVuelo"
-				onclick="selectAction('modificarVuelo', this)">
-		  Modificar vuelo
-		</button>
-		<button class="action-tab-btn"
-				data-action="crearPasajero"
-				onclick="selectAction('crearPasajero', this)">
-		  Crear pasajero
-		</button>
-		<button class="action-tab-btn"
-				data-action="cargaMasiva"
-				onclick="selectAction('cargaMasiva', this)">
-		  Carga masiva
-		</button>
-	  </div>
-
-	  <!-- CREAR VUELO -->
-	  <div id="action-crearVuelo" class="action-form">
-		<strong style="font-size:12px;">Crear vuelo</strong>
-		<form id="form-crear-vuelo">
-		  <label>Fecha vuelo
-			<input type="date" name="fecha" required>
-		  </label>
-		  <label>Hora programada
-			<input type="time" name="horaProgramada" required>
-		  </label>
-		  <label>Aerolínea
-			<input list="lista-aerolineas" name="aerolinea" required placeholder="Sky Airline, LATAM, etc.">
-			<datalist id="lista-aerolineas">
-			  <option value="Sky Airline"></option>
-			  <option value="JetSmart"></option>
-			  <option value="Aerovías DAP"></option>
-			  <option value="Aerolíneas Argentinas"></option>
-			  <option value="Aeroméxico"></option>
-			  <option value="Air Canada"></option>
-			  <option value="American Airlines"></option>
-			  <option value="Avianca"></option>
-			  <option value="Copa Airlines"></option>
-			  <option value="Delta Air Lines"></option>
-			  <option value="Spirit Airlines"></option>
-			  <option value="Air France"></option>
-			  <option value="British Airways"></option>
-			  <option value="Iberia"></option>
-			  <option value="Swiss International Air Lines"></option>
-			  <option value="Qatar Airways"></option>
-			</datalist>
-		  </label>
-		  <label>Número de vuelo
-			<input type="text" name="numeroVuelo" placeholder="LA345" required>
-		  </label>
-		  <label>Terminal
-			<select id="terminal-crear" name="terminal" required>
-			  <option value="">-- Seleccionar --</option>
-			  <option value="Nacional">Nacional</option>
-			  <option value="Internacional">Internacional</option>
-			</select>
-		  </label>
-		  <label>Puerta
-			<input type="number" name="puerta" min="1" max="12" required>
-		  </label>
-		  <label>Espigón
-			<select id="espigon-crear" name="espigon" required>
-			  <option value="">-- Seleccionar --</option>
-			  <!-- Se llena dinámicamente según terminal -->
-			</select>
-		  </label>
-		  <label>Cant. pasajeros PMR
-			<input type="number" name="cantPmr" min="0" value="0" required>
-		  </label>
-		  <label>Tipo de servicio
-			<select name="tipoServicio" required>
-			  <option value="">-- Seleccionar --</option>
-			  <option value="Embarque">Embarque</option>
-			  <option value="Desembarque">Desembarque</option>
-			  <option value="Conexion">Conexión</option>
-			</select>
-		  </label>
-		  <label>Observaciones
-			<textarea name="observaciones"></textarea>
-		  </label>
-		  <button type="submit" class="btn-submit">Guardar vuelo</button>
-		  <div id="msg-crear-vuelo" class="msg"></div>
-		</form>
-	  </div>
-
-	  <!-- MODIFICAR VUELO -->
-	  <div id="action-modificarVuelo" class="action-form hidden">
-		<strong style="font-size:12px;">Modificar vuelo (solo hoy)</strong>
-		<form id="form-modificar-vuelo">
-		  <label>Seleccionar vuelo (fecha de hoy)
-			<select id="select-vuelo-modificar" name="idVuelo" required>
-			  <option value="">Cargando...</option>
-			</select>
-		  </label>
-		  <div id="info-vuelo-modificar" class="helper-text"></div>
-
-		  <label>Nueva fecha (opcional)
-			<input type="date" name="nuevaFecha">
-		  </label>
-		  <label>Nueva hora
-			<input type="time" name="nuevaHora">
-		  </label>
-		  <label>Nueva puerta
-			<input type="number" name="nuevaPuerta" min="1" max="12">
-		  </label>
-		  <label>Nuevo espigón
-			<select id="espigon-modificar" name="nuevoEspigon">
-			  <option value="">-- Seleccionar --</option>
-			</select>
-		  </label>
-
-		  <div class="helper-text">
-			Al guardar, el estado de vuelo se marcará como <b>Modificado</b>.
-		  </div>
-		  <button type="submit" class="btn-submit">Guardar cambios</button>
-		  <div id="msg-modificar-vuelo" class="msg"></div>
-		</form>
-	  </div>
-
-	  <!-- CREAR PASAJERO -->
-	  <div id="action-crearPasajero" class="action-form hidden">
-		<strong style="font-size:12px;">Crear pasajero PMR</strong>
-		<form id="form-crear-pasajero">
-		  <label>Vuelo
-			<select id="select-vuelo-pasajero" name="vuelo" required>
-			  <option value="">Cargando...</option>
-			</select>
-		  </label>
-		  <label>Nombre pasajero
-			<input type="text" name="nombre" required>
-		  </label>
-		  <label>Tipo asistencia
-			<input type="text" name="tipoAsistencia" placeholder="Silla de ruedas, ciego, etc." required>
-		  </label>
-		  <label>Edad (opcional)
-			<input type="number" name="edad" min="0">
-		  </label>
-		  <label>Origen
-			<input type="text" name="origen" placeholder="Puerta, zona, estacionamiento...">
-		  </label>
-		  <label>Destino
-			<input type="text" name="destino" placeholder="Puerta, zona, estacionamiento...">
-		  </label>
-		  <label>Observaciones
-			<textarea name="observaciones"></textarea>
-		  </label>
-		  <button type="submit" class="btn-submit">Guardar pasajero</button>
-		  <div id="msg-crear-pasajero" class="msg"></div>
-		</form>
-	  </div>
-
-	  <!-- CARGA MASIVA -->
-	  <div id="action-cargaMasiva" class="action-form hidden">
-		<strong style="font-size:12px;">Carga masiva (v2)</strong>
-		<p class="helper-text">
-		  Selecciona un archivo CSV o Excel (.csv, .xlsx, .xls) con columnas:
-		  Nombre_PMR, RUT, Edad, Fecha_Vuelo, Hora, Tipo_Vuelo, Vuelo, Aerolínea,
-		  Terminal, Origen, Destino, Puerta, Espigón, Tipo_PMR, Observaciones.
-		</p>
-		<input type="file" id="file-carga-masiva" accept=".csv,.xlsx,.xls" />
-		<button type="button" class="btn-submit" id="btn-procesar-carga">Procesar archivo</button>
-
-		<!-- Botón que aparece solo cuando hay errores -->
-		<button type="button"
-				class="btn-submit"
-				id="btn-descargar-errores"
-				style="margin-top:4px; display:none;">
-		  Descargar errores
-		</button>
-
-		<div class="helper-text">
-		  Se crearán vuelos únicos (sumando PMR por vuelo) y un registro de pasajero por cada fila.
-		</div>
-		<div id="msg-carga-masiva" class="msg"></div>
-	  </div>
-
-	  <!-- SEPARADOR -->
-	  <hr style="border-color:#1f2937; margin:8px 0;">
-
-	  <!-- ACCIONES AGENTES -->
-	  <div class="sidebar-section-title" style="margin-bottom:4px;">Acciones agentes</div>
-	  <div class="action-tabs">
-		<button class="action-tab-btn"
-				data-action="asignarPmr"
-				onclick="selectAction('asignarPmr', this)">
-		  Asignar PMR a agente
-		</button>
-	  </div>
-
-	  <div id="action-asignarPmr" class="action-form hidden">
-		<strong style="font-size:12px;">Asignar PMR a agente</strong>
-		<p class="helper-text">
-		  Lista PMR con estado <b>"En espera"</b> y agentes con estado de servicio <b>"Disponible"</b>.
-		</p>
-		<form id="form-asignar-pmr">
-		  <label>Pasajero PMR
-			<select id="select-pmr-asignar" name="idPmr" required>
-			  <option value="">(Cargando...)</option>
-			</select>
-		  </label>
-		  <div id="info-pmr-asignar" class="helper-text"></div>
-
-		  <label>Agente disponible
-			<select id="select-agente-asignar" name="idAgente" required>
-			  <option value="">(Cargando...)</option>
-			</select>
-		  </label>
-		  <div id="info-agente-asignar" class="helper-text"></div>
-
-		  <label>Tipo de traslado
-			<select name="tipoTraslado" required>
-			  <option value="">-- Seleccionar --</option>
-			  <option value="Ultima Milla">Ultima Milla</option>
-			  <option value="A Gate">A Gate</option>
-			</select>
-		  </label>
-
-		  <label>Observaciones
-			<textarea name="observaciones"></textarea>
-		  </label>
-
-		  <button type="submit" class="btn-submit">Crear asignación</button>
-		  <div id="msg-asignar-pmr" class="msg"></div>
-		</form>
-	  </div>
-	</div>
-		
-
-        <!-- CREAR PASAJERO -->
-        <div id="action-crearPasajero" class="action-form hidden">
-          <strong style="font-size:12px;">Crear pasajero PMR</strong>
-          <p class="helper-text">Crea un PMR asociado a un vuelo y actualiza la cantidad PMR.</p>
-          <form id="form-crear-pasajero">
-            <label>Vuelo
-              <select name="vuelo" id="select-vuelo-pasajero">
-                <option value="">(Cargando...)</option>
-              </select>
-            </label>
-            <label>Nombre pasajero
-              <input type="text" name="nombre" required />
-            </label>
-            <label>Tipo asistencia
-              <input type="text" name="tipoAsistencia" placeholder="Silla de ruedas, ciego, etc." />
-            </label>
-            <label>Edad (opcional)
-              <input type="number" name="edad" min="0" />
-            </label>
-            <label>Lugar de origen
-              <input type="text" name="origen" />
-            </label>
-            <label>Destino
-              <input type="text" name="destino" />
-            </label>
-            <label>Observaciones
-              <textarea name="observaciones"></textarea>
-            </label>
-            <button type="submit" class="btn-submit">Guardar pasajero</button>
-            <div id="msg-crear-pasajero" class="msg"></div>
-          </form>
+    <!-- ACCIONES -->
+    <div>
+      <div class="sidebar-section-title">Acciones</div>
+      <div class="actions-box">
+        <div class="action-tabs">
+          <button class="action-tab-btn active" data-target="form-crear-vuelo">Crear vuelo</button>
+          <button class="action-tab-btn" data-target="form-modificar-vuelo">Modificar vuelo</button>
+          <button class="action-tab-btn" data-target="form-carga-masiva">Carga masiva</button>
+          <button class="action-tab-btn" data-target="form-crear-pmr">Crear pasajero</button>
+          <button class="action-tab-btn" data-target="form-asignar-pmr">Asignar PMR</button>
         </div>
 
-        <!-- CARGA MASIVA -->
-        <!-- CARGA MASIVA -->
-		<div id="action-cargaMasiva" class="action-form hidden">
-		  <strong style="font-size:12px;">Carga masiva (v2)</strong>
-		  <p class="helper-text">
-			Selecciona un archivo CSV o Excel (.csv, .xlsx, .xls) con columnas:
-			Nombre_PMR, RUT, Edad, Fecha_Vuelo, Hora, Tipo_Vuelo, Vuelo, Aerolínea,
-			Terminal, Origen, Destino, Puerta, Espigón, Tipo_PMR, Observaciones.
-		  </p>
-		  <input type="file" id="file-carga-masiva" accept=".csv,.xlsx,.xls" />
-		  <button type="button" class="btn-submit" id="btn-procesar-carga">Procesar archivo</button>
+        <!-- FORM CREAR VUELO -->
+        <div id="form-crear-vuelo" class="action-form">
+          <label>Fecha vuelo
+            <input type="date" id="crear-fecha" />
+          </label>
+          <label>Hora programada
+            <input type="time" id="crear-hora" />
+          </label>
+          <label>Aerolínea
+            <input type="text" id="crear-aerolinea" placeholder="Sky, LATAM, etc." />
+          </label>
+          <label>Número de vuelo
+            <input type="text" id="crear-numero" placeholder="LA345" />
+          </label>
+          <label>Terminal
+            <select id="crear-terminal">
+              <option value="">— Seleccionar —</option>
+              <option value="Nacional">Nacional</option>
+              <option value="Internacional">Internacional</option>
+            </select>
+          </label>
+          <label>Puerta
+            <input type="text" id="crear-puerta" placeholder="1–13" />
+          </label>
+          <label>Espigón
+            <input type="text" id="crear-espigon" placeholder="A–F" />
+          </label>
+          <label>Tipo de avión
+            <select id="crear-tipo-avion">
+              <option value="">— Seleccionar —</option>
+              <option value="NB">NB</option>
+              <option value="WB">WB</option>
+            </select>
+          </label>
+          <label>Origen (código)
+            <input type="text" id="crear-origen-vuelo" placeholder="SCL, LIM, etc." />
+          </label>
+          <label>Destino (código)
+            <input type="text" id="crear-destino-vuelo" placeholder="SCL, LIM, etc." />
+          </label>
+          <label>Cant. pasajeros PMR
+            <input type="number" id="crear-cant-pmr" min="0" value="0" />
+          </label>
+          <label>Tipo de servicio
+            <select id="crear-tipo-servicio">
+              <option value="">— Seleccionar —</option>
+              <option value="Embarque">Embarque</option>
+              <option value="Desembarque">Desembarque</option>
+            </select>
+          </label>
+          <label>Estado de vuelo
+            <select id="crear-estado-vuelo">
+              <option value="Programado">Programado</option>
+              <option value="Modificado">Modificado</option>
+              <option value="Retrasado">Retrasado</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </label>
+          <label>Observaciones
+            <textarea id="crear-obs"></textarea>
+          </label>
 
-		  <!-- 🔽 NUEVO: botón para descargar errores -->
-		  <button type="button"
-				  class="btn-submit"
-				  id="btn-descargar-errores"
-				  style="margin-top:4px; display:none;">
-			Descargar errores
-		  </button>
+          <button class="btn-submit" id="btn-crear-vuelo">Guardar vuelo</button>
+          <div class="helper-text">Al crear, se generará un ID_Vuelo único.</div>
+          <div class="msg" id="msg-crear-vuelo"></div>
+        </div>
 
-		  <div class="helper-text">
-			Se crearán vuelos únicos (sumando PMR por vuelo) y un registro de pasajero por cada fila.
-		  </div>
-		  <div id="msg-carga-masiva" class="msg"></div>
-		</div>
-      </div>
-    </aside>
+        <!-- FORM MODIFICAR VUELO -->
+        <div id="form-modificar-vuelo" class="action-form hidden">
+          <label>Seleccionar vuelo (sólo hoy)
+            <select id="modificar-id-vuelo">
+              <option value="">— Seleccionar —</option>
+            </select>
+          </label>
+          <label>Nueva fecha
+            <input type="date" id="modificar-fecha" />
+          </label>
+          <label>Nueva hora
+            <input type="time" id="modificar-hora" />
+          </label>
+          <label>Nueva puerta
+            <input type="text" id="modificar-puerta" />
+          </label>
+          <label>Nuevo espigón
+            <input type="text" id="modificar-espigon" />
+          </label>
 
-    <!-- MAIN -->
-    <main class="main">
-      <div class="view-header">
-        <div class="view-title" id="view-title">Vuelos (Base Vuelos)</div>
-        <div class="view-filters">
-          <div class="chip"><span class="chip-label">Vista:</span><span id="chip-vista">Vuelos</span></div>
+          <button class="btn-submit" id="btn-modificar-vuelo">Modificar vuelo</button>
+          <div class="helper-text">Sólo se permiten modificaciones en vuelos del día actual.</div>
+          <div class="msg" id="msg-modificar-vuelo"></div>
+        </div>
+
+        <!-- FORM CARGA MASIVA -->
+        <div id="form-carga-masiva" class="action-form hidden">
+          <label>Archivo Excel (.xlsx / .xls)
+            <input type="file" id="input-carga-masiva" accept=".xlsx,.xls" />
+          </label>
+          <div class="helper-text">
+            Columnas A–O: Nombre, RUT, Edad, Fecha_Vuelo, Hora, Tipo_Vuelo, Vuelo, Tipo_Avion, Aerolínea,
+            Terminal, Origen, Destino, Puerta, Espigón, Tipo_PMR.
+          </div>
+          <button class="btn-submit" id="btn-carga-masiva">Procesar archivo</button>
+          <div class="msg" id="msg-carga-masiva"></div>
+        </div>
+
+        <!-- FORM CREAR PASAJERO PMR -->
+        <div id="form-crear-pmr" class="action-form hidden">
+          <label>Vuelo (número + fecha)
+            <select id="crear-pmr-vuelo">
+              <option value="">— Seleccionar vuelo —</option>
+            </select>
+          </label>
+          <label>Nombre pasajero PMR
+            <input type="text" id="crear-pmr-nombre" placeholder="Nombre completo" />
+          </label>
+          <label>Tipo de asistencia
+            <input type="text" id="crear-pmr-tipo" placeholder="WHL_SLC, etc." />
+          </label>
+          <label>Edad
+            <input type="number" id="crear-pmr-edad" min="0" />
+          </label>
+          <label>Origen (código)
+            <input type="text" id="crear-pmr-origen" placeholder="SCL, LIM, etc." />
+          </label>
+          <label>Destino (código)
+            <input type="text" id="crear-pmr-destino" placeholder="SCL, LIM, etc." />
+          </label>
+          <label>Observaciones
+            <textarea id="crear-pmr-obs"></textarea>
+          </label>
+
+          <button class="btn-submit" id="btn-crear-pmr">Crear pasajero PMR</button>
+          <div class="helper-text">
+            El pasajero se creará en estado <b>En espera</b> y se actualizará la cantidad de PMR del vuelo.
+          </div>
+          <div class="msg" id="msg-crear-pmr"></div>
+        </div>
+
+        <!-- FORM ASIGNAR PMR -->
+        <div id="form-asignar-pmr" class="action-form hidden">
+          <label>Pasajero PMR (En espera)
+            <select id="asig-select-pmr">
+              <option value="">— Seleccionar PMR —</option>
+            </select>
+          </label>
+
+          <label>Agente disponible (misma terminal)
+            <select id="asig-select-agente">
+              <option value="">— Selecciona primero un PMR —</option>
+            </select>
+          </label>
+
+          <label>Tipo de traslado
+            <select id="asig-tipo-traslado">
+              <option value="">— Seleccionar —</option>
+              <option value="Ultima Milla">Última Milla</option>
+              <option value="Tramo Completo">Tramo Completo</option>
+            </select>
+          </label>
+
+          <!-- Campos solo lectura ORIGEN/DESTINO -->
+          <label>Origen (auto)
+            <input type="text" id="asig-origen" readonly />
+          </label>
+
+          <label>Destino (auto)
+            <input type="text" id="asig-destino" readonly />
+          </label>
+          <div class="helper-text">
+            Origen y destino se calculan automáticamente según el tipo de servicio del vuelo,
+            el tipo de asistencia del PMR y el tipo de traslado.
+          </div>
+
+          <label>Observaciones
+            <textarea id="asig-obs"></textarea>
+          </label>
+
+          <button class="btn-submit" id="btn-asignar-pmr">Asignar</button>
+          <div class="helper-text">
+            Se filtrarán sólo agentes "Disponibles" en la misma terminal que el vuelo del PMR.
+          </div>
+          <div class="msg" id="msg-asignar-pmr"></div>
         </div>
       </div>
+    </div>
+  </aside>
 
+  <!-- MAIN -->
+  <main class="main">
+    <div class="view-header">
+      <div class="view-title" id="view-title">Vuelos</div>
+      <div class="view-filters">
+        <button class="btn-submit" id="btn-actualizar" style="width:auto;padding:4px 10px;font-size:11px;">
+          Actualizar datos
+        </button>
+        <!-- Conteo regresivo de autorefresco -->
+        <div class="chip" id="auto-refresh-box" style="display:none;">
+          <span class="chip-label">Auto-refresco</span>
+          <span>en <span id="auto-refresh-label">45</span> s</span>
+        </div>
+        <div class="chip" id="chip-info-vista">
+          <span class="chip-label">Vuelos:</span>
+          <span>Mostrando hoy y mañana</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-container">
       <!-- VISTA VUELOS -->
       <section id="view-vuelos" class="view-section active">
-        <div class="view-container">
-          <h3 style="font-size:13px;margin-bottom:4px;">Listado de vuelos</h3>
-          <div class="empty-state" id="empty-vuelos">
-            Aquí se mostrarán los vuelos leídos desde Google Sheets.
+        <!-- Filtros de Vuelos -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px;margin-bottom:4px;">
+          <div style="min-width:150px;">
+            <label>Filtro N° vuelo
+              <input type="text" id="filtro-vuelo-num" placeholder="Ej: LA345" />
+            </label>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>ID_Vuelo</th><th>Fecha</th><th>Hora</th><th>Aerolínea</th>
-                <th>N° Vuelo</th><th>Terminal</th><th>Puerta</th><th>Espigón</th>
-                <th>PMR</th><th>Tipo</th><th>Estado</th><th>Obs</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-vuelos"></tbody>
-          </table>
+          <div style="min-width:150px;">
+            <label>Aerolínea (autocompletar)
+              <input type="text" id="filtro-aerolinea" list="lista-aerolineas" placeholder="Todas" />
+              <datalist id="lista-aerolineas"></datalist>
+            </label>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID Vuelo</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Aerolínea</th>
+              <th>N° Vuelo</th>
+              <th>Terminal</th>
+              <th>Puerta</th>
+              <th>Espigón</th>
+              <th>Cant PMR</th>
+              <th>Tipo servicio</th>
+              <th>Estado</th>
+              <th>Tipo</th>
+              <th>Origen</th>
+              <th>Destino</th>
+              <th>Obs</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-vuelos"></tbody>
+        </table>
+        <div class="empty-state" id="empty-vuelos" style="display:none;">
+          No hay vuelos para hoy o mañana (con PMR en espera).
         </div>
       </section>
 
-      <!-- VISTA PASAJEROS -->
-      <section id="view-pasajeros" class="view-section">
-        <div class="view-container">
-          <h3 style="font-size:13px;margin-bottom:4px;">Pasajeros PMR</h3>
-          <div class="empty-state" id="empty-pasajeros">
-            Aquí se verán los pasajeros PMR.
+      <!-- VISTA PASAJEROS PMR -->
+      <section id="view-pmr" class="view-section">
+        <!-- Filtros PMR -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px;margin-bottom:4px;">
+          <div style="min-width:180px;">
+            <label>Filtrar por N° de vuelo
+              <select id="filtro-pmr-vuelo">
+                <option value="">Todos</option>
+              </select>
+            </label>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>ID_PMR</th><th>Vuelo</th><th>Nombre</th><th>Tipo Asistencia</th>
-                <th>Edad</th><th>Origen</th><th>Destino</th><th>Estado</th>
-                <th>ID_Agente</th><th>Obs</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-pasajeros"></tbody>
-          </table>
+          <div style="min-width:180px;">
+            <label>Filtrar por Estado
+              <select id="filtro-pmr-estado">
+                <option value="">Todos</option>
+              </select>
+            </label>
+          </div>
         </div>
-      </section>
 
-      <!-- VISTA AGENTES -->
-      <section id="view-agentes" class="view-section">
-        <div class="view-container">
-          <h3 style="font-size:13px;margin-bottom:4px;">Agentes</h3>
-          <div class="empty-state" id="empty-agentes">
-            Aquí se verán los agentes (vigente, licencia, vacaciones, etc.).
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>ID_Agente</th><th>Nombre</th><th>RUT</th><th>Teléfono</th>
-                <th>Estado</th><th>Estado Servicio</th><th>Último Servicio</th><th>Obs</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-agentes"></tbody>
-          </table>
+        <table>
+          <thead>
+            <tr>
+              <th>ID PMR</th>
+              <th>Vuelo</th>
+              <th>Nombre</th>
+              <th>Tipo asistencia</th>
+              <th>Edad</th>
+              <th>Origen</th>
+              <th>Destino</th>
+              <th>Estado</th>
+              <th>ID Agente</th>
+              <th>Hora inicio</th>
+              <th>Hora fin</th>
+              <th>Obs</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-pmr"></tbody>
+        </table>
+        <div class="empty-state" id="empty-pmr" style="display:none;">
+          No hay pasajeros PMR para los filtros seleccionados.
         </div>
       </section>
 
       <!-- VISTA ASIGNACIONES -->
       <section id="view-asignaciones" class="view-section">
-        <div class="view-container">
-          <h3 style="font-size:13px;margin-bottom:4px;">Asignaciones</h3>
-          <div class="empty-state" id="empty-asignaciones">
-            Aquí se verán las asignaciones entre vuelos, PMR y agentes.
+        <!-- Filtros Asignaciones -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px;margin-bottom:4px;">
+          <div style="min-width:150px;">
+            <label>Filtro N° vuelo
+              <input type="text" id="filtro-asig-vuelo-num" placeholder="Ej: LA345" />
+            </label>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>ID_Asignación</th><th>ID_Vuelo</th><th>ID_PMR</th><th>ID_Agente</th>
-                <th>Fecha Asig.</th><th>Hora Asig.</th><th>Hora Inicio</th><th>Hora Fin</th>
-                <th>Estado</th><th>Obs</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-asignaciones"></tbody>
-          </table>
+          <div style="min-width:150px;">
+            <label>Fecha asignación
+              <input type="date" id="filtro-asig-fecha" />
+            </label>
+          </div>
+          <div style="min-width:150px;">
+            <label>Tipo traslado
+              <select id="filtro-asig-tipo">
+                <option value="">Todos</option>
+              </select>
+            </label>
+          </div>
+          <div style="min-width:150px;">
+            <label>Estado
+              <select id="filtro-asig-estado">
+                <option value="">Todos</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID Asignación</th>
+              <th>ID Vuelo</th>
+              <th>ID PMR</th>
+              <th>ID Agente</th>
+              <th>Fecha</th>
+              <th>Hora Asig.</th>
+              <th>Hora inicio</th>
+              <th>Hora fin</th>
+              <th>Estado</th>
+              <th>Tipo traslado</th>
+              <th>Origen</th>
+              <th>Destino</th>
+              <th>Justificación cancelación</th>
+              <th>Hora límite</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-asignaciones"></tbody>
+        </table>
+        <div class="empty-state" id="empty-asignaciones" style="display:none;">
+          No hay asignaciones registradas para los filtros seleccionados.
         </div>
       </section>
-    </main>
-  </div>
+
+      <!-- VISTA AGENTES -->
+      <section id="view-agentes" class="view-section">
+        <table>
+          <thead>
+            <tr>
+              <th>ID Agente</th>
+              <th>Nombre</th>
+              <th>RUT</th>
+              <th>Teléfono</th>
+              <th>Estado</th>
+              <th>Estado Servicio</th>
+              <th>Último Servicio</th>
+              <th>Observaciones</th>
+              <th>Ubicación</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-agentes"></tbody>
+        </table>
+        <div class="empty-state" id="empty-agentes" style="display:none;">
+          No hay agentes configurados.
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
 
 <script>
-  // 🔗 URL de tu API de Apps Script
+  // 👉 URL del Web App
   const API_URL = "https://script.google.com/macros/s/AKfycbwFBHpIx-gQrVAvj5Vv-I-l1X3NR9MYbyTV9CtxgKCw7oPeuxIE5qrYx3eZdDoIroTE/exec";
 
   let cacheVuelos = [];
-  let erroresCargaDetalle = []; // para guardar detalle de errores de carga masiva
+  let cachePasajeros = [];
+  let cacheAsignaciones = [];
+  let cacheAgentes = [];
 
-  // ========= UI BÁSICA (cambiar vista principal) =========
-  function changeView(viewId, btn){
-    const map = {
-      vuelos:"Vuelos (Base Vuelos)",
-      pasajeros:"Pasajeros PMR",
-      agentes:"Agentes",
-      asignaciones:"Asignaciones"
-    };
-    const titulo = map[viewId] || "Panel";
-    document.getElementById("view-title").textContent = titulo;
-    document.getElementById("chip-vista").textContent = titulo.split(" ")[0];
+  // Autorefresco (3 minutos, aviso últimos 45 s)
+  let autoRefreshInterval = null;
+  let autoRefreshSeconds = 180;
 
-    document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
-    document.getElementById("view-"+viewId).classList.add("active");
+  function iniciarAutoRefresh() {
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    autoRefreshSeconds = 180;
 
-    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-  }
+    const box = document.getElementById("auto-refresh-box");
+    const label = document.getElementById("auto-refresh-label");
+    if (box) box.style.display = "none";
 
-  // ========= UI BÁSICA (acciones en el sidebar) =========
-  function selectAction(actionId, btn){
-    document.querySelectorAll(".action-form").forEach(f => f.classList.add("hidden"));
-    document.getElementById("action-"+actionId).classList.remove("hidden");
-    document.querySelectorAll(".action-tab-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-  }
+    autoRefreshInterval = setInterval(async () => {
+      autoRefreshSeconds--;
 
-  // ========= ESPIGÓN SEGÚN TERMINAL =========
-  function actualizarOpcionesEspigon(selectElem, terminal){
-    selectElem.innerHTML = '<option value="">-- Seleccionar --</option>';
-    let opciones = [];
-    if (terminal === "Nacional") {
-      opciones = ["A", "B"];
-    } else if (terminal === "Internacional") {
-      opciones = ["C", "D", "E", "F"];
-    } else {
-      opciones = ["A","B","C","D","E","F"];
-    }
-    opciones.forEach(v=>{
-      const opt = document.createElement("option");
-      opt.value = v;
-      opt.textContent = v;
-      selectElem.appendChild(opt);
-    });
-  }
-
-  function actualizarEspigonCrear(){
-    const terminal = document.getElementById("terminal-crear").value;
-    const selEsp = document.getElementById("espigon-crear");
-    if (!selEsp) return;
-    actualizarOpcionesEspigon(selEsp, terminal);
-  }
-
-  function onCambioVueloModificar(){
-    const sel = document.getElementById("select-vuelo-modificar");
-    const id  = sel.value;
-    const infoDiv = document.getElementById("info-vuelo-modificar");
-
-    const campoFecha  = document.querySelector('#form-modificar-vuelo input[name="nuevaFecha"]');
-    const campoHora   = document.querySelector('#form-modificar-vuelo input[name="nuevaHora"]');
-    const campoPuerta = document.querySelector('#form-modificar-vuelo input[name="nuevaPuerta"]');
-    const campoEsp    = document.getElementById("espigon-modificar");
-
-    if (campoFecha) campoFecha.value  = "";
-    if (campoHora) campoHora.value   = "";
-    if (campoPuerta) campoPuerta.value = "";
-    if (campoEsp) campoEsp.innerHTML = '<option value="">-- Seleccionar --</option>';
-    if (infoDiv) infoDiv.textContent = "";
-
-    if (!id) return;
-    const v = cacheVuelos.find(v => String(v.idVuelo) === String(id));
-    if (!v) return;
-
-    let fechaStr = "(sin fecha)";
-    if (v.fecha) {
-      const d = new Date(v.fecha);
-      fechaStr = d.toLocaleDateString("es-CL");
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,'0');
-      const day = String(d.getDate()).padStart(2,'0');
-      if (campoFecha) campoFecha.value = `${y}-${m}-${day}`;
-    }
-
-    if (campoHora && v.horaProgramada) campoHora.value = v.horaProgramada;
-    if (campoPuerta && v.puerta) campoPuerta.value = v.puerta;
-
-    if (campoEsp) {
-      actualizarOpcionesEspigon(campoEsp, v.terminal || "");
-      if (v.espigon) campoEsp.value = v.espigon;
-    }
-
-    if (infoDiv) {
-      infoDiv.textContent = `Actual: ${fechaStr}, puerta ${v.puerta || "-"}, espigón ${v.espigon || "-"}, terminal ${v.terminal || "-"}`;
-    }
-  }
-
-  // ========= UTIL: convertir fecha dd-mm-aaaa a yyyy-mm-dd =========
-  function convertirFechaAISO(fechaStr){
-    if (!fechaStr) return "";
-    const parts = fechaStr.trim().split(/[-\/]/);
-    if (parts.length !== 3) return "";
-    let [d,m,y] = parts;
-    if (y.length === 2) y = "20" + y;
-    return `${y.padStart(4,"0")}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
-  }
-
-  // ========= LECTOR GENÉRICO (CSV / EXCEL) =========
-  async function leerArchivoComoTexto(file){
-    const name = file.name.toLowerCase();
-    if (name.endsWith(".csv") || name.endsWith(".txt")) {
-      return await file.text();
-    } else if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
-      const data = await file.arrayBuffer();
-      const wb = XLSX.read(data, {type:"array"});
-      const firstSheet = wb.SheetNames[0];
-      const sheet = wb.Sheets[firstSheet];
-      // lo convertimos internamente a CSV para procesar igual que un .csv
-      return XLSX.utils.sheet_to_csv(sheet);
-    } else {
-      throw new Error("Formato no soportado. Usa CSV, XLSX o XLS.");
-    }
-  }
-
-  // ========= CARGA DATOS DESDE API =========
-  async function cargarDatos(){
-    const estadoApi = document.getElementById("estado-api");
-    try{
-      const res = await fetch(API_URL + "?action=listAll");
-      const data = await res.json();
-      if(!data.ok){
-        if (estadoApi) estadoApi.textContent = "Error";
-        console.error(data.error);
-        return;
+      if (autoRefreshSeconds <= 0) {
+        autoRefreshSeconds = 180;
+        await cargarDatos(true);
       }
-      if (estadoApi) estadoApi.textContent = "Conectado";
 
-      cacheVuelos = data.vuelos || [];
+      if (!box || !label) return;
 
-      renderVuelos(data.vuelos || []);
-      renderPasajeros(data.pasajeros || []);
-      renderAgentes(data.agentes || []);
-      renderAsignaciones(data.asignaciones || []);
+      if (autoRefreshSeconds <= 45) {
+        box.style.display = "inline-flex";
+        label.textContent = autoRefreshSeconds;
+      } else {
+        box.style.display = "none";
+      }
+    }, 1000);
+  }
 
-      llenarSelectVuelos();
-    }catch(err){
+  function detenerAutoRefresh() {
+    if (autoRefreshInterval) {
+      clearInterval(autoRefreshInterval);
+      autoRefreshInterval = null;
+    }
+    const box = document.getElementById("auto-refresh-box");
+    if (box) box.style.display = "none";
+  }
+
+  /* --------- UTILIDADES FECHA / HORA --------- */
+  function parseFechaSolo(fecha) {
+    if (!fecha) return null;
+    if (fecha instanceof Date) return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+
+    const s = String(fecha).trim();
+    let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (m) {
+      return new Date(parseInt(m[3],10), parseInt(m[2],10)-1, parseInt(m[1],10));
+    }
+    // también podría venir como yyyy-mm-dd
+    m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+    if (m) {
+      return new Date(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10));
+    }
+    const d = new Date(s);
+    if (!isNaN(d)) {
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+    return null;
+  }
+
+  function hoyTrunc() {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  function addDias(date, dias) {
+    const d = new Date(date);
+    d.setDate(d.getDate() + dias);
+    return d;
+  }
+
+  function formatearHora(horaRaw) {
+    if (!horaRaw) return "";
+    if (horaRaw instanceof Date) {
+      const hh = String(horaRaw.getHours()).padStart(2,"0");
+      const mm = String(horaRaw.getMinutes()).padStart(2,"0");
+      return `${hh}:${mm}`;
+    }
+    const s = String(horaRaw);
+    const m = s.match(/(\d{1,2}):(\d{2})/);
+    if (m) return `${m[1].padStart(2,"0")}:${m[2]}`;
+    return s;
+  }
+
+  // Normalizar fecha proveniente de Excel a yyyy-mm-dd
+  function normalizarFechaExcel(valor) {
+    if (valor === null || valor === undefined || valor === "") return "";
+
+    if (typeof valor === "number") {
+      const date = new Date(Math.round((valor - 25569) * 86400 * 1000));
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2,"0");
+      const dd = String(date.getDate()).padStart(2,"0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    const s = String(valor).trim();
+    let m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+    if (m) {
+      const yyyy = m[1];
+      const mm = m[2].padStart(2,"0");
+      const dd = m[3].padStart(2,"0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (m) {
+      const dd = m[1].padStart(2,"0");
+      const mm = m[2].padStart(2,"0");
+      const yyyy = m[3];
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    const d = new Date(s);
+    if (!isNaN(d)) {
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    return s;
+  }
+
+  // Normalizar hora Excel a HH:mm
+  function normalizarHoraExcel(valor) {
+    if (valor === null || valor === undefined || valor === "") return "";
+
+    if (typeof valor === "number") {
+      const totalSeconds = Math.round(valor * 86400);
+      const hh = String(Math.floor(totalSeconds / 3600) % 24).padStart(2,"0");
+      const mm = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2,"0");
+      return `${hh}:${mm}`;
+    }
+
+    const s = String(valor).trim();
+    const m = s.match(/(\d{1,2}):(\d{2})/);
+    if (m) return `${m[1].padStart(2,"0")}:${m[2]}`;
+    return s;
+  }
+	/* --------- CÁLCULO ORIGEN/DESTINO (MISMA LÓGICA QUE BACKEND) --------- */
+	function calcularOrigenDestinoFront(tipoServicioVuelo, tipoAsistencia, tipoTraslado, puerta, espigon) {
+	  const ts = (tipoServicioVuelo || "").toString().toLowerCase().trim();   // embarque / desembarque
+	  const ta = (tipoAsistencia || "").toString().toUpperCase().trim();      // WHC / WHR / WHS / otros
+	  const tt = (tipoTraslado || "").toString().toLowerCase().trim();        // última milla / tramo completo
+
+	  const puertaEspigon   = ((puerta || "") + (espigon || "")).trim();
+	  const puertaEmbarque  = puertaEspigon ? `Puerta Embarque ${puertaEspigon}` : "Puerta Embarque";
+
+	  const esUltimaMilla   = tt.indexOf("ultima") !== -1 || tt.indexOf("última") !== -1;
+	  const esTramoCompleto = tt.indexOf("tramo") !== -1;
+
+	  // WHC usa Asiento Avión, WHR/WHS (y cualquier otro) usa Puerta Avión
+	  const esWHC          = (ta === "WHC");
+	  const etiquetaAvion  = esWHC ? "Asiento Avión" : "Puerta Avión";
+
+	  let origen  = "";
+	  let destino = "";
+
+	  if (esUltimaMilla) {
+		// 👉 REGLA ÚLTIMA MILLA
+		if (ts === "embarque") {
+		  // WHC: Origen = Puerta Embarque, Destino = Asiento Avión
+		  // WHR/WHS: Origen = Puerta Embarque, Destino = Puerta Avión
+		  origen  = puertaEmbarque;
+		  destino = etiquetaAvion;
+		} else if (ts === "desembarque") {
+		  // WHC: Origen = Asiento Avión, Destino = Puerta Embarque
+		  // WHR/WHS: Origen = Puerta Avión, Destino = Puerta Embarque
+		  origen  = etiquetaAvion;
+		  destino = puertaEmbarque;
+		}
+	  } else if (esTramoCompleto) {
+		// 👉 REGLA TRAMO COMPLETO
+		if (ts === "embarque") {
+		  // WHC: Origen = Elección del Pasajero, Destino = Asiento Avión
+		  // WHR/WHS: Origen = Elección del Pasajero, Destino = Puerta Avión
+		  origen  = "Elección del Pasajero";
+		  destino = etiquetaAvion;
+		} else if (ts === "desembarque") {
+		  // WHC: Origen = Asiento Avión, Destino = Elección del Pasajero
+		  // WHR/WHS: Origen = Puerta Avión, Destino = Elección del Pasajero
+		  origen  = etiquetaAvion;
+		  destino = "Elección del Pasajero";
+		}
+	  }
+
+	  return { origen, destino };
+	}
+
+  /* --------- CARGA DE DATOS --------- */
+  async function cargarDatos(silencioso = false) {
+    const apiStatus = document.getElementById("api-status");
+    const lastUpdate = document.getElementById("last-update");
+    apiStatus.textContent = "Conectando con API...";
+
+    try {
+      const res = await fetch(API_URL + "?action=listAll");
+      const json = await res.json();
+
+      if (!json.ok) throw new Error(json.error || "Error en listAll");
+
+      cacheVuelos        = json.vuelos || [];
+      cachePasajeros     = json.pasajeros || [];
+      cacheAsignaciones  = json.asignaciones || [];
+      cacheAgentes       = json.agentes || [];
+
+      apiStatus.textContent = "Conectado a la API";
+      const ahora = new Date();
+      lastUpdate.textContent = "Última actualización: " +
+        ahora.toLocaleTimeString("es-CL", {hour:"2-digit", minute:"2-digit"});
+
+      renderVistaActual();
+      llenarCombosAcciones();
+      iniciarAutoRefresh();
+    } catch (err) {
       console.error(err);
-      if (estadoApi) estadoApi.textContent = "Error de conexión";
+      apiStatus.textContent = "Error al conectar con la API";
+      if (!silencioso) {
+        alert("Error al cargar datos: " + (err.message || err));
+      }
     }
   }
 
-  function renderVuelos(vuelos){
+  /* --------- RENDERIZADO DE VISTAS --------- */
+  function renderVistaActual() {
+    const btnActivo = document.querySelector(".nav-btn.active");
+    const vista = btnActivo ? btnActivo.dataset.view : "vuelos";
+
+    if (vista === "vuelos") renderVistaVuelos();
+    else if (vista === "pmr") renderVistaPmr();
+    else if (vista === "asignaciones") renderVistaAsignaciones();
+    else if (vista === "agentes") renderVistaAgentes();
+  }
+
+  function renderVistaVuelos() {
     const tbody = document.getElementById("tbody-vuelos");
     const empty = document.getElementById("empty-vuelos");
-    if (!tbody || !empty) return;
+    const filtroNumInput = document.getElementById("filtro-vuelo-num");
+    const filtroAeroInput = document.getElementById("filtro-aerolinea");
+    const datalistAero = document.getElementById("lista-aerolineas");
     tbody.innerHTML = "";
-    if(!vuelos.length){
-      empty.style.display = "block";
-      return;
+
+    const hoy = hoyTrunc();
+    const manana = addDias(hoy, 1);
+
+    // Solo vuelos que tengan al menos un PMR EN ESPERA
+    const vuelosConPmr = new Set();
+    cachePasajeros
+      .filter(p => (p.estadoPmr || "").toLowerCase() === "en espera")
+      .forEach(p => {
+        if (p.vuelo) vuelosConPmr.add(String(p.vuelo));
+      });
+
+    const filtroNum = (filtroNumInput?.value || "").trim().toLowerCase();
+    const filtroAero = (filtroAeroInput?.value || "").trim().toLowerCase();
+
+    if (datalistAero) {
+      const setAero = new Set();
+      cacheVuelos.forEach(v => {
+        if (v.aerolinea) setAero.add(String(v.aerolinea));
+      });
+      datalistAero.innerHTML = "";
+      Array.from(setAero).sort().forEach(a => {
+        const opt = document.createElement("option");
+        opt.value = a;
+        datalistAero.appendChild(opt);
+      });
     }
-    empty.style.display = "none";
-    vuelos.forEach(v=>{
+
+    const filtrados = cacheVuelos.filter(v => {
+      const f = parseFechaSolo(v.fecha);
+      if (!f) return false;
+      const esHoy = f.getTime() === hoy.getTime();
+      const esManana = f.getTime() === manana.getTime();
+      if (!esHoy && !esManana) return false;
+
+      const numVuelo = (v.numeroVuelo || "").toString();
+      const aerolinea = (v.aerolinea || "").toString();
+
+      // Solo vuelos con PMR EN ESPERA
+      if (!vuelosConPmr.has(numVuelo)) return false;
+
+      if (filtroNum && !numVuelo.toLowerCase().includes(filtroNum)) return false;
+      if (filtroAero && aerolinea.toLowerCase() !== filtroAero) return false;
+
+      return true;
+    });
+
+    if (!filtrados.length) {
+      empty.style.display = "block";
+    } else {
+      empty.style.display = "none";
+    }
+
+    filtrados.forEach(v => {
       const tr = document.createElement("tr");
-      const fechaStr = v.fecha ? new Date(v.fecha).toLocaleDateString("es-CL") : "";
       tr.innerHTML = `
-        <td>${v.idVuelo||""}</td>
-        <td>${fechaStr}</td>
-        <td>${v.horaProgramada||""}</td>
-        <td>${v.aerolinea||""}</td>
-        <td>${v.numeroVuelo||""}</td>
-        <td>${v.terminal||""}</td>
-        <td>${v.puerta||""}</td>
-        <td>${v.espigon||""}</td>
-        <td>${v.cantPmr||0}</td>
-        <td>${v.tipoServicio||""}</td>
-        <td>${v.estadoVuelo||""}</td>
-        <td>${v.observaciones||""}</td>
+        <td>${v.idVuelo || ""}</td>
+        <td>${v.fecha || ""}</td>
+        <td>${formatearHora(v.horaProgramada)}</td>
+        <td>${v.aerolinea || ""}</td>
+        <td>${v.numeroVuelo || ""}</td>
+        <td>${v.terminal || ""}</td>
+        <td>${v.puerta || ""}</td>
+        <td>${v.espigon || ""}</td>
+        <td>${v.cantPmr || 0}</td>
+        <td>${v.tipoServicio || ""}</td>
+        <td>${v.estadoVuelo || ""}</td>
+        <td>${v.tipo || v.tipoAvion || ""}</td>
+        <td>${v.origen || ""}</td>
+        <td>${v.destino || ""}</td>
+        <td>${v.observaciones || ""}</td>
       `;
       tbody.appendChild(tr);
     });
+
+    document.getElementById("view-title").textContent = "Vuelos";
+    document.getElementById("chip-info-vista").innerHTML =
+      `<span class="chip-label">Vuelos:</span><span>Hoy y mañana (con PMR en espera)</span>`;
   }
 
-  function renderPasajeros(pasajeros){
-    const tbody = document.getElementById("tbody-pasajeros");
-    const empty = document.getElementById("empty-pasajeros");
-    if (!tbody || !empty) return;
+  function renderVistaPmr() {
+    const tbody = document.getElementById("tbody-pmr");
+    const empty = document.getElementById("empty-pmr");
+    const selFiltroVuelo = document.getElementById("filtro-pmr-vuelo");
+    const selFiltroEstado = document.getElementById("filtro-pmr-estado");
     tbody.innerHTML = "";
-    if(!pasajeros.length){
-      empty.style.display = "block";
-      return;
+
+    const hoy = hoyTrunc();
+    const manana = addDias(hoy, 1);
+
+    // Base: solo PMR EN ESPERA y vuelos HOY o MAÑANA
+    let pmrBase = cachePasajeros.filter(p => {
+      if ((p.estadoPmr || "").toLowerCase() !== "en espera") return false;
+      const vuelo = cacheVuelos.find(v => String(v.numeroVuelo) === String(p.vuelo));
+      if (!vuelo) return false;
+      const f = parseFechaSolo(vuelo.fecha);
+      if (!f) return false;
+      const esHoy = f.getTime() === hoy.getTime();
+      const esManana = f.getTime() === manana.getTime();
+      if (!esHoy && !esManana) return false;
+      return true;
+    });
+
+    // reconstruir combos según datos actuales
+    if (selFiltroVuelo) {
+      const valorActual = selFiltroVuelo.value;
+      selFiltroVuelo.innerHTML = '<option value="">Todos</option>';
+      const setVuelos = new Set();
+      pmrBase.forEach(p => {
+        if (p.vuelo) setVuelos.add(String(p.vuelo));
+      });
+      Array.from(setVuelos).sort().forEach(vu => {
+        const opt = document.createElement("option");
+        opt.value = vu;
+        opt.textContent = vu;
+        selFiltroVuelo.appendChild(opt);
+      });
+      if (valorActual) selFiltroVuelo.value = valorActual;
     }
-    empty.style.display = "none";
-    pasajeros.forEach(p=>{
+
+    if (selFiltroEstado) {
+      const valorActualEstado = selFiltroEstado.value;
+      selFiltroEstado.innerHTML = '<option value="">Todos</option>';
+      const setEstados = new Set();
+      pmrBase.forEach(p => {
+        if (p.estadoPmr) setEstados.add(String(p.estadoPmr));
+      });
+      Array.from(setEstados).sort().forEach(est => {
+        const opt = document.createElement("option");
+        opt.value = est;
+        opt.textContent = est;
+        selFiltroEstado.appendChild(opt);
+      });
+      if (valorActualEstado) selFiltroEstado.value = valorActualEstado;
+    }
+
+    const vueloFiltro = (selFiltroVuelo?.value || "").trim();
+    const estadoFiltro = (selFiltroEstado?.value || "").trim();
+
+    if (vueloFiltro) {
+      pmrBase = pmrBase.filter(p => String(p.vuelo) === vueloFiltro);
+    }
+    if (estadoFiltro) {
+      pmrBase = pmrBase.filter(p => String(p.estadoPmr || "").trim() === estadoFiltro);
+    }
+
+    if (!pmrBase.length) {
+      empty.style.display = "block";
+    } else {
+      empty.style.display = "none";
+    }
+
+    pmrBase.forEach(p => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${p.idPmr||""}</td>
-        <td>${p.vuelo||""}</td>
-        <td>${p.nombre||""}</td>
-        <td>${p.tipoAsistencia||""}</td>
-        <td>${p.edad||""}</td>
-        <td>${p.origen||""}</td>
-        <td>${p.destino||""}</td>
-        <td>${p.estadoPmr||""}</td>
-        <td>${p.idAgente||""}</td>
-        <td>${p.observaciones||""}</td>
+        <td>${p.idPmr || ""}</td>
+        <td>${p.vuelo || ""}</td>
+        <td>${p.nombre || ""}</td>
+        <td>${p.tipoAsistencia || ""}</td>
+        <td>${p.edad || ""}</td>
+        <td>${p.origen || ""}</td>
+        <td>${p.destino || ""}</td>
+        <td>${p.estadoPmr || ""}</td>
+        <td>${p.idAgente || ""}</td>
+        <td>${formatearHora(p.horaInicio)}</td>
+        <td>${formatearHora(p.horaFin)}</td>
+        <td>${p.observaciones || ""}</td>
       `;
       tbody.appendChild(tr);
     });
+
+    document.getElementById("view-title").textContent = "Pasajeros PMR";
+    document.getElementById("chip-info-vista").innerHTML =
+      `<span class="chip-label">PMR:</span><span>Vuelos de hoy y mañana (En espera)</span>`;
   }
 
-  function renderAgentes(agentes){
-    const tbody = document.getElementById("tbody-agentes");
-    const empty = document.getElementById("empty-agentes");
-    if (!tbody || !empty) return;
-    tbody.innerHTML = "";
-    if(!agentes.length){
-      empty.style.display = "block";
-      return;
-    }
-    empty.style.display = "none";
-    agentes.forEach(a=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${a.idAgente||""}</td>
-        <td>${a.nombre||""}</td>
-        <td>${a.rut||""}</td>
-        <td>${a.telefono||""}</td>
-        <td>${a.estado||""}</td>
-        <td>${a.estadoServicio||""}</td>
-        <td>${a.ultimoServicio||""}</td>
-        <td>${a.observaciones||""}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  function renderAsignaciones(asig){
+  function renderVistaAsignaciones() {
     const tbody = document.getElementById("tbody-asignaciones");
     const empty = document.getElementById("empty-asignaciones");
-    if (!tbody || !empty) return;
     tbody.innerHTML = "";
-    if(!asig.length){
+
+    const filtroNumInput = document.getElementById("filtro-asig-vuelo-num");
+    const filtroFechaInput = document.getElementById("filtro-asig-fecha");
+    const selTipo = document.getElementById("filtro-asig-tipo");
+    const selEstado = document.getElementById("filtro-asig-estado");
+
+    // combos dinámicos para tipo traslado y estado
+    if (selTipo) {
+      const valActualTipo = selTipo.value;
+      selTipo.innerHTML = '<option value="">Todos</option>';
+      const setTipos = new Set();
+      cacheAsignaciones.forEach(a => {
+        if (a.tipoTraslado) setTipos.add(String(a.tipoTraslado));
+      });
+      Array.from(setTipos).sort().forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t;
+        opt.textContent = t;
+        selTipo.appendChild(opt);
+      });
+      if (valActualTipo) selTipo.value = valActualTipo;
+    }
+
+    if (selEstado) {
+      const valActualEstado = selEstado.value;
+      selEstado.innerHTML = '<option value="">Todos</option>';
+      const setEstados = new Set();
+      cacheAsignaciones.forEach(a => {
+        if (a.estadoAsignacion) setEstados.add(String(a.estadoAsignacion));
+      });
+      Array.from(setEstados).sort().forEach(e => {
+        const opt = document.createElement("option");
+        opt.value = e;
+        opt.textContent = e;
+        selEstado.appendChild(opt);
+      });
+      if (valActualEstado) selEstado.value = valActualEstado;
+    }
+
+    const numFiltro = (filtroNumInput?.value || "").trim().toLowerCase();
+    const fechaFiltro = (filtroFechaInput?.value || "").trim(); // yyyy-mm-dd
+    const tipoFiltro = (selTipo?.value || "").trim().toLowerCase();
+    const estadoFiltro = (selEstado?.value || "").trim().toLowerCase();
+
+    const filtrados = cacheAsignaciones.filter(a => {
+      // filtro por número de vuelo (usando cacheVuelos)
+      if (numFiltro) {
+        const vuelo = cacheVuelos.find(v => String(v.idVuelo) === String(a.idVuelo));
+        const numVuelo = vuelo ? String(vuelo.numeroVuelo || "").toLowerCase() : "";
+        if (!numVuelo.includes(numFiltro)) return false;
+      }
+
+      // filtro por fecha asignación
+      if (fechaFiltro) {
+        const fa = parseFechaSolo(a.fechaAsignacion);
+        const fFiltroDate = new Date(fechaFiltro);
+        const fFiltro = new Date(
+          filtroFechaInput.value ? fFiltroDate.getFullYear() : 0,
+          filtroFechaInput.value ? fFiltroDate.getMonth() : 0,
+          filtroFechaInput.value ? fFiltroDate.getDate() : 1
+        );
+        if (!fa || fa.getTime() !== fFiltro.getTime()) return false;
+      }
+
+      // filtro por tipo traslado
+      if (tipoFiltro) {
+        const t = (a.tipoTraslado || "").toString().toLowerCase();
+        if (t !== tipoFiltro) return false;
+      }
+
+      // filtro por estado
+      if (estadoFiltro) {
+        const e = (a.estadoAsignacion || "").toString().toLowerCase();
+        if (e !== estadoFiltro) return false;
+      }
+
+      return true;
+    });
+
+    if (!filtrados.length) {
+      empty.style.display = "block";
+    } else {
+      empty.style.display = "none";
+    }
+
+    filtrados.forEach(a => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${a.idAsignacion || ""}</td>
+        <td>${a.idVuelo || ""}</td>
+        <td>${a.idPmr || ""}</td>
+        <td>${a.idAgente || ""}</td>
+        <td>${a.fechaAsignacion || ""}</td>
+        <td>${formatearHora(a.horaAsignacion)}</td>
+        <td>${formatearHora(a.horaInicio)}</td>
+        <td>${formatearHora(a.horaFin)}</td>
+        <td>${a.estadoAsignacion || ""}</td>
+        <td>${a.tipoTraslado || ""}</td>
+        <td>${a.origenAsignacion || ""}</td>
+        <td>${a.destinoAsignacion || ""}</td>
+        <td>${a.justificacionCancel || ""}</td>
+        <td>${formatearHora(a.horaLimite)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("view-title").textContent = "Asignaciones";
+    document.getElementById("chip-info-vista").innerHTML =
+      `<span class="chip-label">Asignaciones:</span><span>Según filtros actuales</span>`;
+  }
+
+  function renderVistaAgentes() {
+    const tbody = document.getElementById("tbody-agentes");
+    const empty = document.getElementById("empty-agentes");
+    tbody.innerHTML = "";
+
+    if (!cacheAgentes.length) {
       empty.style.display = "block";
       return;
     }
     empty.style.display = "none";
-    asig.forEach(a=>{
+
+    cacheAgentes.forEach(a => {
       const tr = document.createElement("tr");
-      const fStr = a.fechaAsignacion ? new Date(a.fechaAsignacion).toLocaleDateString("es-CL") : "";
       tr.innerHTML = `
-        <td>${a.idAsignacion||""}</td>
-        <td>${a.idVuelo||""}</td>
-        <td>${a.idPmr||""}</td>
-        <td>${a.idAgente||""}</td>
-        <td>${fStr}</td>
-        <td>${a.horaAsignacion||""}</td>
-        <td>${a.horaInicio||""}</td>
-        <td>${a.horaFin||""}</td>
-        <td>${a.estadoAsignacion||""}</td>
-        <td>${a.observaciones||""}</td>
+        <td>${a.idAgente || ""}</td>
+        <td>${a.nombre || ""}</td>
+        <td>${a.rut || ""}</td>
+        <td>${a.telefono || ""}</td>
+        <td>${a.estado || ""}</td>
+        <td>${a.estadoServicio || ""}</td>
+        <td>${a.ultimoServicio || ""}</td>
+        <td>${a.observaciones || ""}</td>
+        <td>${a.ubicacion || ""}</td>
       `;
       tbody.appendChild(tr);
     });
+
+    document.getElementById("view-title").textContent = "Agentes";
+    document.getElementById("chip-info-vista").innerHTML =
+      `<span class="chip-label">Agentes:</span><span>Lista completa de agentes</span>`;
   }
 
-  function llenarSelectVuelos(){
-    const selMod = document.getElementById("select-vuelo-modificar");
-    const selPas = document.getElementById("select-vuelo-pasajero");
-    if (!selMod || !selPas) return;
+  /* --------- LLENAR COMBOS DE ACCIONES --------- */
+  function llenarCombosAcciones() {
+    const selMod = document.getElementById("modificar-id-vuelo");
+    selMod.innerHTML = '<option value="">— Seleccionar —</option>';
 
-    selMod.innerHTML = '<option value="">-- Seleccionar vuelo --</option>';
-    selPas.innerHTML = '<option value="">-- Seleccionar vuelo --</option>';
+    const hoy = hoyTrunc();
+    const manana = addDias(hoy, 1);
 
-    const hoy = new Date();
-    const y = hoy.getFullYear();
-    const m = String(hoy.getMonth()+1).padStart(2,'0');
-    const d = String(hoy.getDate()).padStart(2,'0');
-    const hoyIso = `${y}-${m}-${d}`;
+    // MODIFICAR VUELO: solo vuelos de hoy
+    cacheVuelos.forEach(v => {
+      const f = parseFechaSolo(v.fecha);
+      if (!f || f.getTime() !== hoy.getTime()) return;
 
-    cacheVuelos.forEach(v=>{
-      let esHoy = false;
-      if (v.fecha) {
-        const dv = new Date(v.fecha);
-        const vy = dv.getFullYear();
-        const vm = String(dv.getMonth()+1).padStart(2,'0');
-        const vd = String(dv.getDate()).padStart(2,'0');
-        const fechaVueloIso = `${vy}-${vm}-${vd}`;
-        esHoy = (fechaVueloIso === hoyIso);
-      }
-      if (esHoy) {
-        const opt1 = document.createElement("option");
-        const fechaStr = v.fecha ? new Date(v.fecha).toLocaleDateString("es-CL") : "";
-        opt1.value = v.idVuelo;
-        opt1.textContent = `${v.numeroVuelo || ""} | ${v.aerolinea || ""} | ${fechaStr}`;
-        selMod.appendChild(opt1);
-      }
-
-      const opt2 = document.createElement("option");
-      opt2.value = v.numeroVuelo;
-      opt2.textContent = `${v.numeroVuelo || ""} | ${v.aerolinea || ""}`;
-      selPas.appendChild(opt2);
+      const opt = document.createElement("option");
+      opt.value = v.idVuelo;
+      opt.textContent = `${v.idVuelo} | ${v.numeroVuelo} | ${v.fecha}`;
+      selMod.appendChild(opt);
     });
+
+    // CREAR PASAJERO PMR: todos los vuelos
+    const selCrearPmrVuelo = document.getElementById("crear-pmr-vuelo");
+    selCrearPmrVuelo.innerHTML = '<option value="">— Seleccionar vuelo —</option>';
+    cacheVuelos.forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v.numeroVuelo;
+      opt.textContent = `${v.numeroVuelo} | ${v.fecha} | ${v.terminal || ""}`;
+      selCrearPmrVuelo.appendChild(opt);
+    });
+
+    // ASIGNAR PMR: solo EN ESPERA y vuelos HOY o MAÑANA
+    const selPmr = document.getElementById("asig-select-pmr");
+    selPmr.innerHTML = '<option value="">— Seleccionar PMR —</option>';
+
+    cachePasajeros
+      .filter(p => (p.estadoPmr || "").toLowerCase() === "en espera")
+      .filter(p => {
+        const vuelo = cacheVuelos.find(v => String(v.numeroVuelo) === String(p.vuelo));
+        if (!vuelo) return false;
+        const f = parseFechaSolo(vuelo.fecha);
+        if (!f) return false;
+        const esHoy = f.getTime() === hoy.getTime();
+        const esManana = f.getTime() === manana.getTime();
+        return esHoy || esManana;
+      })
+      .forEach(p => {
+        const vuelo = cacheVuelos.find(v => String(v.numeroVuelo) === String(p.vuelo));
+        const terminal = vuelo ? (vuelo.terminal || "") : "";
+        const opt = document.createElement("option");
+        opt.value = p.idPmr;
+        opt.textContent = `[${p.idPmr}] ${p.vuelo} · ${p.nombre} · ${terminal || "Sin terminal"}`;
+        selPmr.appendChild(opt);
+      });
+
+    const selAg = document.getElementById("asig-select-agente");
+    selAg.innerHTML = '<option value="">— Selecciona primero un PMR —</option>';
+
+    // reset preview origen/destino
+    actualizarPreviewOrigenDestino();
   }
 
-  // ========= FORMULARIO: CREAR VUELO =========
-  document.getElementById("form-crear-vuelo").addEventListener("submit", async (ev)=>{
-    ev.preventDefault();
-    const form = ev.target;
+  function refrescarAgentesParaPmr() {
+    const selPmr = document.getElementById("asig-select-pmr");
+    const selAg = document.getElementById("asig-select-agente");
+    selAg.innerHTML = "";
+
+    const idPmr = selPmr.value;
+    if (!idPmr) {
+      selAg.innerHTML = '<option value="">— Selecciona primero un PMR —</option>';
+      actualizarPreviewOrigenDestino();
+      return;
+    }
+
+    const pmr = cachePasajeros.find(p => String(p.idPmr) === String(idPmr));
+    if (!pmr) {
+      selAg.innerHTML = '<option value="">No se encontró el PMR seleccionado</option>';
+      actualizarPreviewOrigenDestino();
+      return;
+    }
+
+    const vuelo = cacheVuelos.find(v => String(v.numeroVuelo) === String(pmr.vuelo));
+    const terminal = vuelo ? (vuelo.terminal || "") : "";
+
+    const disponibles = cacheAgentes.filter(a =>
+      (a.estadoServicio || "").toLowerCase() === "disponible" &&
+      (!terminal || String(a.ubicacion).toLowerCase() === String(terminal).toLowerCase())
+    );
+
+    if (!disponibles.length) {
+      selAg.innerHTML = `<option value="">No hay agentes disponibles en ${terminal || "la terminal"}</option>`;
+    } else {
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = `— Agentes disponibles en ${terminal || "terminal"} —`;
+      selAg.appendChild(placeholder);
+
+      disponibles.forEach(a => {
+        const opt = document.createElement("option");
+        opt.value = a.idAgente;
+        opt.textContent = `${a.idAgente} · ${a.nombre}`;
+        selAg.appendChild(opt);
+      });
+    }
+
+    // actualizar preview origen/destino al cambiar PMR
+    actualizarPreviewOrigenDestino();
+  }
+
+  /* --------- PREVIEW ORIGEN/DESTINO EN ASIGNACIÓN --------- */
+  function actualizarPreviewOrigenDestino() {
+    const inputOrigen  = document.getElementById("asig-origen");
+    const inputDestino = document.getElementById("asig-destino");
+    const idPmr = document.getElementById("asig-select-pmr").value;
+    const tipoT = document.getElementById("asig-tipo-traslado").value;
+
+    if (!inputOrigen || !inputDestino) return;
+
+    if (!idPmr || !tipoT) {
+      inputOrigen.value = "";
+      inputDestino.value = "";
+      return;
+    }
+
+    const pmr = cachePasajeros.find(p => String(p.idPmr) === String(idPmr));
+    if (!pmr) {
+      inputOrigen.value = "";
+      inputDestino.value = "";
+      return;
+    }
+
+    const vuelo = cacheVuelos.find(v => String(v.numeroVuelo) === String(pmr.vuelo));
+    if (!vuelo) {
+      inputOrigen.value = "";
+      inputDestino.value = "";
+      return;
+    }
+
+    const od = calcularOrigenDestinoFront(
+      vuelo.tipoServicio,
+      pmr.tipoAsistencia,
+      tipoT,
+      vuelo.puerta,
+      vuelo.espigon
+    );
+
+    inputOrigen.value  = od.origen || "";
+    inputDestino.value = od.destino || "";
+  }
+
+  /* --------- ACCIONES --------- */
+  async function accionCrearVuelo() {
     const msg = document.getElementById("msg-crear-vuelo");
-    if (!msg) return;
-    msg.textContent = "Enviando...";
+    msg.textContent = "";
     msg.className = "msg";
 
-    const params = new URLSearchParams(new FormData(form));
-    params.append("action", "createVuelo");
+    const fecha    = document.getElementById("crear-fecha").value;
+    const hora     = document.getElementById("crear-hora").value;
+    const aerol    = document.getElementById("crear-aerolinea").value.trim();
+    const num      = document.getElementById("crear-numero").value.trim();
+    const term     = document.getElementById("crear-terminal").value;
+    const puerta   = document.getElementById("crear-puerta").value.trim();
+    const espigon  = document.getElementById("crear-espigon").value.trim();
+    const tipoAvion= document.getElementById("crear-tipo-avion").value;
+    const origenV  = document.getElementById("crear-origen-vuelo").value.trim();
+    const destinoV = document.getElementById("crear-destino-vuelo").value.trim();
+    const cantPmr  = document.getElementById("crear-cant-pmr").value;
+    const tipo     = document.getElementById("crear-tipo-servicio").value;
+    const estadoV  = document.getElementById("crear-estado-vuelo").value;
+    const obs      = document.getElementById("crear-obs").value.trim();
+
+    if (!fecha || !hora || !aerol || !num || !term || !tipo) {
+      msg.textContent = "Completa al menos: fecha, hora, aerolínea, número, terminal y tipo servicio.";
+      msg.className = "msg err";
+      return;
+    }
+
+    const params = new URLSearchParams();
+    params.append("action","createVuelo");
+    params.append("fecha",fecha);
+    params.append("horaProgramada",hora);
+    params.append("aerolinea",aerol);
+    params.append("numeroVuelo",num);
+    params.append("terminal",term);
+    params.append("puerta",puerta);
+    params.append("espigon",espigon);
+    params.append("cantPmr",cantPmr || "0");
+    params.append("tipoServicio",tipo);
+    if (estadoV)  params.append("estadoVuelo",estadoV);
+    if (tipoAvion)params.append("tipoAvion",tipoAvion);
+    if (origenV)  params.append("origen",origenV);
+    if (destinoV) params.append("destino",destinoV);
+    if (obs)      params.append("observaciones",obs);
 
     try {
       const res = await fetch(API_URL + "?" + params.toString());
       const json = await res.json();
-      if (json.ok) {
-        const cant = Number(form.cantPmr.value || 0);
-        const numVuelo = form.numeroVuelo.value;
-        let texto = "Vuelo creado con ID " + (json.idVuelo || "");
-        if (cant > 0) {
-          texto += `. Debes crear ${cant} pasajero(s) PMR para el vuelo ${numVuelo}.`;
-        }
-        msg.textContent = texto;
-        msg.className = "msg ok";
+      if (!json.ok) throw new Error(json.error || "Error al crear vuelo");
 
-        await cargarDatos();
-
-        // Si hay PMR, saltar directo a "Crear Pasajero" con el vuelo seleccionado
-        if (cant > 0) {
-          const selPas = document.getElementById("select-vuelo-pasajero");
-          if (selPas) selPas.value = numVuelo;
-          const btnPas = document.querySelector('.action-tab-btn[data-action="crearPasajero"]');
-          if (btnPas) {
-            selectAction('crearPasajero', btnPas);
-          }
-        }
-
-        form.reset();
-        actualizarEspigonCrear();
-      } else {
-        msg.textContent = "Error: " + (json.error || "");
-        msg.className = "msg err";
-        console.error(json);
-      }
+      msg.textContent = "Vuelo creado correctamente. ID: " + json.idVuelo;
+      msg.className = "msg ok";
+      await cargarDatos();
     } catch (err) {
-      msg.textContent = "Error de conexión";
+      msg.textContent = "Error al crear vuelo: " + (err.message || err);
       msg.className = "msg err";
-      console.error(err);
     }
-  });
+  }
 
-  // ========= FORMULARIO: MODIFICAR VUELO =========
-  document.getElementById("form-modificar-vuelo").addEventListener("submit", async (ev)=>{
-    ev.preventDefault();
-    const form = ev.target;
+  async function accionModificarVuelo() {
     const msg = document.getElementById("msg-modificar-vuelo");
-    if (!msg) return;
-    msg.textContent = "Enviando...";
+    msg.textContent = "";
     msg.className = "msg";
 
-    const params = new URLSearchParams(new FormData(form));
-    params.append("action", "modificarVuelo");
+    const idVuelo = document.getElementById("modificar-id-vuelo").value;
+    if (!idVuelo) {
+      msg.textContent = "Selecciona un vuelo.";
+      msg.className = "msg err";
+      return;
+    }
+
+    const nuevaFecha   = document.getElementById("modificar-fecha").value;
+    const nuevaHora    = document.getElementById("modificar-hora").value;
+    const nuevaPuerta  = document.getElementById("modificar-puerta").value.trim();
+    const nuevoEspigon = document.getElementById("modificar-espigon").value.trim();
+
+    if (!nuevaFecha && !nuevaHora && !nuevaPuerta && !nuevoEspigon) {
+      msg.textContent = "No hay cambios para aplicar.";
+      msg.className = "msg err";
+      return;
+    }
+
+    const params = new URLSearchParams();
+    params.append("action","modificarVuelo");
+    params.append("idVuelo",idVuelo);
+    if (nuevaFecha)   params.append("nuevaFecha",nuevaFecha);
+    if (nuevaHora)    params.append("nuevaHora",nuevaHora);
+    if (nuevaPuerta)  params.append("nuevoPuerta",nuevaPuerta);
+    if (nuevoEspigon) params.append("nuevoEspigon",nuevoEspigon);
 
     try {
       const res = await fetch(API_URL + "?" + params.toString());
       const json = await res.json();
-      if (json.ok) {
-        msg.textContent = "Vuelo modificado correctamente";
-        msg.className = "msg ok";
-        form.reset();
-        const infoDiv = document.getElementById("info-vuelo-modificar");
-        if (infoDiv) infoDiv.textContent = "";
-        await cargarDatos();
-      } else {
-        msg.textContent = "Error: " + (json.error || "");
-        msg.className = "msg err";
-        console.error(json);
-      }
+      if (!json.ok) throw new Error(json.error || "Error al modificar vuelo");
+
+      msg.textContent = "Vuelo modificado correctamente.";
+      msg.className = "msg ok";
+      await cargarDatos();
     } catch (err) {
-      msg.textContent = "Error de conexión";
+      msg.textContent = "Error al modificar vuelo: " + (err.message || err);
       msg.className = "msg err";
-      console.error(err);
     }
-  });
+  }
 
-  // ========= FORMULARIO: CREAR PASAJERO =========
-  document.getElementById("form-crear-pasajero").addEventListener("submit", async (ev)=>{
-    ev.preventDefault();
-    const form = ev.target;
-    const msg = document.getElementById("msg-crear-pasajero");
-    if (!msg) return;
-    msg.textContent = "Enviando...";
-    msg.className = "msg";
-
-    const params = new URLSearchParams(new FormData(form));
-    params.append("action", "crearPasajero");
-
-    try {
-      const res = await fetch(API_URL + "?" + params.toString());
-      const json = await res.json();
-      if (json.ok) {
-        msg.textContent = "Pasajero creado con ID " + (json.idPmr || "");
-        msg.className = "msg ok";
-        form.reset();
-        await cargarDatos();
-      } else {
-        msg.textContent = "Error: " + (json.error || "");
-        msg.className = "msg err";
-        console.error(json);
-      }
-    } catch (err) {
-      msg.textContent = "Error de conexión";
-      msg.className = "msg err";
-      console.error(err);
-    }
-  });
-
-  // ========= CARGA MASIVA (con progreso y detalle de errores) =========
-  async function procesarCargaMasiva(){
-    const input = document.getElementById("file-carga-masiva");
-    const msg = document.getElementById("msg-carga-masiva");
-    const btnDescargar = document.getElementById("btn-descargar-errores");
-
-    if (!msg) return;
+  // 👉 CARGA MASIVA: bloques de 2 registros + reintentos automáticos (hasta 5) por bloque
+  async function accionCargaMasiva() {
+    const msg   = document.getElementById("msg-carga-masiva");
+    const input = document.getElementById("input-carga-masiva");
+    const btn   = document.getElementById("btn-carga-masiva");
 
     msg.textContent = "";
     msg.className = "msg";
-    erroresCargaDetalle = [];
-    if (btnDescargar) btnDescargar.style.display = "none";
 
-    if (!input || !input.files || !input.files.length) {
-      msg.textContent = "Selecciona un archivo.";
+    const file = input.files && input.files[0];
+    if (!file) {
+      msg.textContent = "Selecciona un archivo Excel (.xlsx / .xls).";
       msg.className = "msg err";
       return;
     }
 
-    const file = input.files[0];
+    btn.disabled = true;
+    msg.textContent = "Leyendo archivo...";
+
+    const reader = new FileReader();
+
+    reader.onerror = () => {
+      msg.textContent = "No se pudo leer el archivo.";
+      msg.className = "msg err";
+      btn.disabled = false;
+    };
+
+    reader.onload = async (e) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, { type: "array" });
+        const wsName = wb.SheetNames[0];
+        const ws = wb.Sheets[wsName];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+
+        if (!rows || rows.length <= 1) {
+          msg.textContent = "No se encontraron filas de datos en el archivo.";
+          msg.className = "msg err";
+          btn.disabled = false;
+          return;
+        }
+
+        const registros = [];
+
+        // Filas de datos (saltamos cabecera)
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+
+          const nombre      = (row[0]  || "").toString().trim();  // A
+          const rut         = (row[1]  || "").toString().trim();  // B
+          const edadRaw     = row[2];                             // C
+          const fechaRaw    = row[3];                             // D
+          const horaRaw     = row[4];                             // E
+          const tipoVuelo   = (row[5]  || "").toString().trim();  // F
+          const vueloNumRaw = row[6];                             // G
+          const tipoAvion   = (row[7]  || "").toString().trim();  // H
+          const aerolinea   = (row[8]  || "").toString().trim();  // I
+          const terminal    = (row[9]  || "").toString().trim();  // J
+          const origen      = (row[10] || "").toString().trim();  // K
+          const destino     = (row[11] || "").toString().trim();  // L
+          const puerta      = (row[12] || "").toString().trim();  // M
+          const espigon     = (row[13] || "").toString().trim();  // N
+          const tipoPmr     = (row[14] || "").toString().trim();  // O
+
+          // Si la fila está muy vacía, la saltamos
+          if (!nombre && !rut && !vueloNumRaw) continue;
+
+          const numeroVuelo = vueloNumRaw ? String(vueloNumRaw).trim() : "";
+          const fechaVuelo  = normalizarFechaExcel(fechaRaw);   // "yyyy-mm-dd"
+          const hora        = normalizarHoraExcel(horaRaw);     // "HH:mm"
+          const edad        = (edadRaw !== "" && edadRaw !== null && edadRaw !== undefined)
+                                ? String(edadRaw).trim()
+                                : "";
+
+          // Sin número de vuelo o sin fecha, no tiene sentido
+          if (!numeroVuelo || !fechaVuelo) {
+            continue;
+          }
+
+          registros.push({
+            nombre,
+            rut,
+            edad,
+            fechaVuelo,
+            hora,
+            tipoVuelo,
+            vuelo: numeroVuelo,
+            tipoAvion,
+            aerolinea,
+            terminal,
+            origen,
+            destino,
+            puerta,
+            espigon,
+            tipoPmr
+          });
+        }
+
+        if (!registros.length) {
+          msg.textContent = "No se generaron registros válidos desde el archivo.";
+          msg.className = "msg err";
+          btn.disabled = false;
+          return;
+        }
+
+        // 🔹 Bloques de 2 registros + reintento hasta 5 veces
+        const chunkSize   = 2;  // 2 registros por bloque
+        const maxRetries  = 5;  // reintentos
+        let totalPasajeros = 0;
+        let totalVuelosNuevos = 0;
+        let totalVuelosActualizados = 0;
+
+        for (let i = 0; i < registros.length; i += chunkSize) {
+          const chunk = registros.slice(i, i + chunkSize);
+          const inicio = i + 1;
+          const fin = Math.min(i + chunkSize, registros.length);
+
+          let intentos = 0;
+          let exito = false;
+
+          while (!exito && intentos < maxRetries) {
+            intentos++;
+            try {
+              msg.textContent =
+                `Enviando registros ${inicio} a ${fin} de ${registros.length} ` +
+                `(intento ${intentos}/${maxRetries})...`;
+
+              const params = new URLSearchParams();
+              params.append("action", "cargaMasivaPmr");
+              params.append("payload", JSON.stringify(chunk));
+
+              const res = await fetch(API_URL + "?" + params.toString());
+              const json = await res.json();
+
+              if (!json.ok) {
+                throw new Error(json.error || "Error en cargaMasivaPmr");
+              }
+
+              totalPasajeros           += json.totalPasajeros || chunk.length;
+              totalVuelosNuevos       += json.vuelosNuevos || 0;
+              totalVuelosActualizados += json.vuelosActualizados || 0;
+
+              exito = true;
+            } catch (err) {
+              console.warn(`Error al enviar chunk ${inicio}-${fin} (intento ${intentos})`, err);
+              if (intentos >= maxRetries) {
+                // Si ya no quedan intentos, lanzamos error con resumen de lo avanzado
+                throw new Error(
+                  `Se perdió la conexión al enviar los registros ${inicio}-${fin}. ` +
+                  `Se intentó ${maxRetries} veces sin éxito. ` +
+                  `Hasta ahora se cargaron ${totalPasajeros} pasajeros, ` +
+                  `${totalVuelosNuevos} vuelos nuevos y ` +
+                  `${totalVuelosActualizados} vuelos actualizados. ` +
+                  `Detalle último error: ${err.message || err}`
+                );
+              }
+              // pequeña espera antes del siguiente intento
+              await new Promise(r => setTimeout(r, 1000));
+            }
+          }
+        }
+
+        msg.textContent =
+          `Carga masiva completada. ` +
+          `Pasajeros: ${totalPasajeros}, ` +
+          `Vuelos nuevos: ${totalVuelosNuevos}, ` +
+          `Vuelos actualizados: ${totalVuelosActualizados}.`;
+        msg.className = "msg ok";
+
+        input.value = "";
+        await cargarDatos();
+
+      } catch (error) {
+        console.error(error);
+        msg.textContent = "Error al procesar el archivo: " + (error.message || error);
+        msg.className = "msg err";
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    reader.readAsArrayBuffer(file);
+  }
+
+  async function accionCrearPasajero() {
+    const msg = document.getElementById("msg-crear-pmr");
+    msg.textContent = "";
+    msg.className = "msg";
+
+    const vueloSel = document.getElementById("crear-pmr-vuelo").value;
+    const nombre   = document.getElementById("crear-pmr-nombre").value.trim();
+    const tipoAsis = document.getElementById("crear-pmr-tipo").value.trim();
+    const edad     = document.getElementById("crear-pmr-edad").value;
+    const origen   = document.getElementById("crear-pmr-origen").value.trim();
+    const destino  = document.getElementById("crear-pmr-destino").value.trim();
+    const obs      = document.getElementById("crear-pmr-obs").value.trim();
+
+    if (!vueloSel || !nombre || !tipoAsis) {
+      msg.textContent = "Ingresa al menos vuelo, nombre y tipo de asistencia.";
+      msg.className = "msg err";
+      return;
+    }
+
+    const params = new URLSearchParams();
+    params.append("action","crearPasajero");
+    params.append("vuelo",vueloSel);
+    params.append("nombre",nombre);
+    params.append("tipoAsistencia",tipoAsis);
+    if (edad)    params.append("edad",edad);
+    if (origen)  params.append("origen",origen);
+    if (destino) params.append("destino",destino);
+    if (obs)     params.append("observaciones",obs);
 
     try {
-      msg.textContent = "Leyendo archivo...";
-      let text = await leerArchivoComoTexto(file);
+      const res = await fetch(API_URL + "?" + params.toString());
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error || "Error al crear pasajero");
 
-      const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
-      if (lines.length <= 1) {
-        msg.textContent = "El archivo no contiene datos (solo encabezado?).";
-        msg.className = "msg err";
-        return;
-      }
-
-      const totalFilas = lines.length - 1;
-      msg.textContent = `Archivo leído. Filas de datos: ${totalFilas}. Preparando vuelos y pasajeros (fase 1/3)...`;
-
-      const vuelosMap = new Map();
-      const pasajeros = [];
-
-      // Columnas esperadas:
-      // A: Nombre_PMR
-      // B: RUT
-      // C: Edad
-      // D: Fecha_Vuelo
-      // E: Hora
-      // F: Tipo_Vuelo
-      // G: Vuelo
-      // H: Aerolínea
-      // I: Terminal
-      // J: Origen
-      // K: Destino
-      // L: Puerta
-      // M: Espigón
-      // N: Tipo_PMR
-      // O: Observaciones
-
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-
-        const cols = line.split(/[,;](?=(?:[^"]*"[^"]*")*[^"]*$)/);
-        if (cols.length < 15) {
-          erroresCargaDetalle.push({
-            tipo: "fila",
-            filaArchivo: i+1,
-            nombre: "",
-            vuelo: "",
-            mensaje: "Cantidad de columnas insuficiente"
-          });
-          continue;
-        }
-
-        let [
-          nombre,
-          rut,
-          edad,
-          fechaV,
-          horaV,
-          tipoV,
-          vuelo,
-          aerolinea,
-          terminal,
-          origen,
-          destino,
-          puerta,
-          espigon,
-          tipoPmr,
-          obs
-        ] = cols.map(c => c.replace(/^"|"$/g, "").trim());
-
-        if (!vuelo) {
-          erroresCargaDetalle.push({
-            tipo: "fila",
-            filaArchivo: i+1,
-            nombre,
-            vuelo: "",
-            mensaje: "Fila sin número de vuelo"
-          });
-          continue;
-        }
-
-        const fechaISO = convertirFechaAISO(fechaV);
-
-        const key = [
-          fechaISO || fechaV,
-          horaV,
-          vuelo,
-          tipoV,
-          aerolinea,
-          terminal,
-          puerta,
-          espigon
-        ].join("|");
-
-        let entry = vuelosMap.get(key);
-        if (!entry) {
-          entry = {
-            fecha: fechaISO,
-            horaProgramada: horaV,
-            numeroVuelo: vuelo,
-            tipoServicio: tipoV,
-            aerolinea: aerolinea,
-            terminal: terminal,
-            puerta: puerta,
-            espigon: espigon,
-            cantPmr: 0
-          };
-          vuelosMap.set(key, entry);
-        }
-        entry.cantPmr++;
-
-        pasajeros.push({
-          filaArchivo: i+1,
-          vuelo,
-          nombre,
-          rut,
-          edad,
-          origen,
-          destino,
-          tipoAsistencia: tipoPmr,
-          observaciones: obs
-        });
-
-        if ((i % 10) === 0) {
-          msg.textContent = `Preparando datos (fase 1/3): ${i}/${lines.length - 1} filas...`;
-        }
-      }
-
-      let vuelosCreados = 0;
-      let pasajerosCreados = 0;
-      let errores = 0;
-      const detallesErrores = [];
-
-      // 2/3: crear vuelos
-      let idxVuelo = 0;
-      const totalVuelosUnicos = vuelosMap.size;
-      msg.textContent = `Enviando vuelos a la API (fase 2/3): 0/${totalVuelosUnicos}...`;
-
-      for (const entry of vuelosMap.values()) {
-        idxVuelo++;
-        const params = new URLSearchParams();
-        params.append("action","createVuelo");
-        if (entry.fecha) params.append("fecha", entry.fecha);
-        params.append("horaProgramada", entry.horaProgramada || "");
-        params.append("aerolinea", entry.aerolinea || "");
-        params.append("numeroVuelo", entry.numeroVuelo || "");
-        params.append("terminal", entry.terminal || "");
-        params.append("puerta", entry.puerta || "");
-        params.append("espigon", entry.espigon || "");
-        params.append("cantPmr", String(entry.cantPmr || 0));
-        params.append("tipoServicio", entry.tipoServicio || "");
-        params.append("observaciones", "Carga masiva");
-
-        try{
-          const res = await fetch(API_URL + "?" + params.toString());
-          const json = await res.json();
-          if (json.ok) {
-            vuelosCreados++;
-          } else {
-            errores++;
-            const msgErr = json.error || "error en createVuelo";
-            if (detallesErrores.length < 5) {
-              detallesErrores.push(`Vuelo ${entry.numeroVuelo}: ${msgErr}`);
-            }
-            erroresCargaDetalle.push({
-              tipo: "vuelo",
-              filaArchivo: null,
-              nombre: entry.numeroVuelo,
-              vuelo: entry.numeroVuelo,
-              mensaje: msgErr
-            });
-            console.log("Error createVuelo:", entry, json);
-          }
-        }catch(err){
-          errores++;
-          const msgErr = "error de red";
-          if (detallesErrores.length < 5) {
-            detallesErrores.push(`Vuelo ${entry.numeroVuelo}: ${msgErr}`);
-          }
-          erroresCargaDetalle.push({
-            tipo: "vuelo",
-            filaArchivo: null,
-            nombre: entry.numeroVuelo,
-            vuelo: entry.numeroVuelo,
-            mensaje: msgErr
-          });
-          console.log("Error de red createVuelo:", entry, err);
-        }
-
-        if ((idxVuelo % 5) === 0) {
-          msg.textContent = `Enviando vuelos a la API (fase 2/3): ${idxVuelo}/${totalVuelosUnicos}...`;
-        }
-      }
-
-      // 3/3: crear pasajeros
-      let idxPas = 0;
-      msg.textContent = `Enviando pasajeros a la API (fase 3/3): 0/${pasajeros.length}...`;
-
-      for (const p of pasajeros) {
-        idxPas++;
-        const params = new URLSearchParams();
-        params.append("action","crearPasajero");
-        params.append("vuelo", p.vuelo);
-        params.append("nombre", p.nombre || "");
-        params.append("tipoAsistencia", p.tipoAsistencia || "");
-        params.append("edad", p.edad || "");
-        params.append("origen", p.origen || "");
-        params.append("destino", p.destino || "");
-        params.append("observaciones", p.observaciones || "");
-        params.append("rut", p.rut || "");
-
-        try{
-          const res = await fetch(API_URL + "?" + params.toString());
-          const json = await res.json();
-          if (json.ok) {
-            pasajerosCreados++;
-          } else {
-            errores++;
-            const msgErr = json.error || "error en crearPasajero";
-            if (detallesErrores.length < 5) {
-              detallesErrores.push(`Pasajero ${p.nombre} (${p.vuelo}): ${msgErr}`);
-            }
-            erroresCargaDetalle.push({
-              tipo: "pasajero",
-              filaArchivo: p.filaArchivo,
-              nombre: p.nombre,
-              vuelo: p.vuelo,
-              mensaje: msgErr
-            });
-            console.log("Error crearPasajero:", p, json);
-          }
-        }catch(err){
-          errores++;
-          const msgErr = "error de red";
-          if (detallesErrores.length < 5) {
-            detallesErrores.push(`Pasajero ${p.nombre} (${p.vuelo}): ${msgErr}`);
-          }
-          erroresCargaDetalle.push({
-            tipo: "pasajero",
-            filaArchivo: p.filaArchivo,
-            nombre: p.nombre,
-            vuelo: p.vuelo,
-            mensaje: msgErr
-          });
-          console.log("Error de red crearPasajero:", p, err);
-        }
-
-        if ((idxPas % 10) === 0) {
-          msg.textContent = `Enviando pasajeros a la API (fase 3/3): ${idxPas}/${pasajeros.length}...`;
-        }
-      }
-
+      msg.textContent = "Pasajero PMR creado correctamente. ID: " + json.idPmr;
+      msg.className = "msg ok";
       await cargarDatos();
-
-      let resumen = `Carga masiva completada. Vuelos creados: ${vuelosCreados}. Pasajeros creados: ${pasajerosCreados}. Errores: ${errores}.`;
-      if (detallesErrores.length) {
-        resumen += ` Ejemplos de error: ${detallesErrores.join(" | ")}`;
-      }
-      msg.textContent = resumen;
-      msg.className = errores ? "msg err" : "msg ok";
-
-      if (erroresCargaDetalle.length && btnDescargar) {
-        btnDescargar.style.display = "block";
-      }
-
     } catch (err) {
-      console.error(err);
-      msg.textContent = err.message || "Error general al procesar la carga.";
+      msg.textContent = "Error al crear pasajero: " + (err.message || err);
       msg.className = "msg err";
     }
   }
 
-  // ========= DESCARGAR CSV DE ERRORES =========
-  function descargarErroresCarga(){
-    if (!erroresCargaDetalle.length) {
-      alert("No hay errores para descargar.");
+  async function accionAsignarPmr() {
+    const msg = document.getElementById("msg-asignar-pmr");
+    msg.textContent = "";
+    msg.className = "msg";
+
+    const idPmr    = document.getElementById("asig-select-pmr").value;
+    const idAgente = document.getElementById("asig-select-agente").value;
+    const tipoT    = document.getElementById("asig-tipo-traslado").value;
+    const obs      = document.getElementById("asig-obs").value.trim();
+
+    if (!idPmr) {
+      msg.textContent = "Selecciona un pasajero PMR.";
+      msg.className = "msg err";
+      return;
+    }
+    if (!idAgente) {
+      msg.textContent = "Selecciona un agente disponible.";
+      msg.className = "msg err";
+      return;
+    }
+    if (!tipoT) {
+      msg.textContent = "Selecciona un tipo de traslado.";
+      msg.className = "msg err";
       return;
     }
 
-    let lineas = ["Tipo;FilaArchivo;Nombre;Vuelo;MensajeError"];
-    erroresCargaDetalle.forEach(e => {
-      lineas.push(
-        `${e.tipo||""};${e.filaArchivo||""};${e.nombre||""};${e.vuelo||""};${e.mensaje||""}`
-      );
+    const params = new URLSearchParams();
+    params.append("action","asignarPmrAgente");
+    params.append("idPmr",idPmr);
+    params.append("idAgente",idAgente);
+    params.append("tipoTraslado",tipoT);
+    params.append("observaciones",obs);
+
+    try {
+      const res = await fetch(API_URL + "?" + params.toString());
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error || "Error al asignar");
+
+      msg.textContent = "Asignación creada correctamente.";
+      msg.className = "msg ok";
+      await cargarDatos();
+    } catch (err) {
+      msg.textContent = "Error al asignar PMR: " + (err.message || err);
+      msg.className = "msg err";
+    }
+  }
+
+  /* --------- EVENTOS --------- */
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const vista = btn.dataset.view;
+        document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+        document.getElementById("view-" + vista).classList.add("active");
+
+        renderVistaActual();
+      });
     });
 
-    const csv = lineas.join("\r\n");
-    const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
-    const url = URL.createObjectURL(blob);
+    document.querySelectorAll(".action-tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".action-tab-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".action-form").forEach(f => f.classList.add("hidden"));
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "Errores_Carga_PMR.csv";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+        btn.classList.add("active");
+        const target = btn.dataset.target;
+        const form = document.getElementById(target);
+        if (form) form.classList.remove("hidden");
+      });
+    });
 
-  // ========= EVENTOS INICIALES =========
-  const terminalCrear = document.getElementById("terminal-crear");
-  if (terminalCrear) {
-    terminalCrear.addEventListener("change", actualizarEspigonCrear);
-  }
+    document.getElementById("btn-crear-vuelo").addEventListener("click", accionCrearVuelo);
+    document.getElementById("btn-modificar-vuelo").addEventListener("click", accionModificarVuelo);
+    document.getElementById("btn-carga-masiva").addEventListener("click", accionCargaMasiva);
+    document.getElementById("btn-crear-pmr").addEventListener("click", accionCrearPasajero);
+    document.getElementById("btn-asignar-pmr").addEventListener("click", accionAsignarPmr);
 
-  const selMod = document.getElementById("select-vuelo-modificar");
-  if (selMod) {
-    selMod.addEventListener("change", onCambioVueloModificar);
-  }
+    document.getElementById("asig-select-pmr").addEventListener("change", refrescarAgentesParaPmr);
+    document.getElementById("asig-tipo-traslado").addEventListener("change", actualizarPreviewOrigenDestino);
 
-  const btnCarga = document.getElementById("btn-procesar-carga");
-  if (btnCarga) {
-    btnCarga.addEventListener("click", procesarCargaMasiva);
-  }
+    document.getElementById("btn-actualizar").addEventListener("click", () => cargarDatos());
 
-  const btnDescargarErr = document.getElementById("btn-descargar-errores");
-  if (btnDescargarErr) {
-    btnDescargarErr.addEventListener("click", descargarErroresCarga);
-  }
+    // Filtros Vuelos
+    document.getElementById("filtro-vuelo-num").addEventListener("input", renderVistaVuelos);
+    document.getElementById("filtro-aerolinea").addEventListener("input", renderVistaVuelos);
 
-  // Inicializar
-  actualizarEspigonCrear();
-  cargarDatos();
+    // Filtros PMR
+    document.getElementById("filtro-pmr-vuelo").addEventListener("change", renderVistaPmr);
+    document.getElementById("filtro-pmr-estado").addEventListener("change", renderVistaPmr);
+
+    // Filtros Asignaciones
+    document.getElementById("filtro-asig-vuelo-num").addEventListener("input", renderVistaAsignaciones);
+    document.getElementById("filtro-asig-fecha").addEventListener("change", renderVistaAsignaciones);
+    document.getElementById("filtro-asig-tipo").addEventListener("change", renderVistaAsignaciones);
+    document.getElementById("filtro-asig-estado").addEventListener("change", renderVistaAsignaciones);
+
+    cargarDatos();
+  });
 </script>
-
-
 </body>
 </html>
-
